@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
@@ -15,6 +14,8 @@ namespace XcpcArchive
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            string cosmosDbConnectionString = builder.Configuration.GetConnectionString("CosmosDb");
 
             // Add services to the container.
             builder.Services
@@ -31,6 +32,14 @@ namespace XcpcArchive
                 .AddRazorPages()
                 .AddRazorRuntimeCompilation()
                 .AddMicrosoftIdentityUI();
+
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson();
+
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddSingleton(
+                new CosmosClient(cosmosDbConnectionString));
 
             var app = builder.Build();
 

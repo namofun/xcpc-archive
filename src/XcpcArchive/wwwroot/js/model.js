@@ -103,7 +103,7 @@ function parseTime(contestTime) {
 	m = parseInt(match[2]);
 	s = parseInt(match[3]);	
 	ms = 0;
-	if (match.length == 5)
+	if (match.length == 5 && match[4] !== undefined)
 		ms = parseInt(match[4].substring(1));
 
 	ret = h * 60 * 60 * 1000 + m * 60 * 1000 + s * 1000 + ms;
