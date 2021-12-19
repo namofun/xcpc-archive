@@ -1,5 +1,7 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -13,45 +15,45 @@ namespace XcpcArchive.CcsApi
         /// Identifier of the team
         /// </summary>
         /// <remarks>Usable as a label, at WFs normally the team seat number.</remarks>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
 
         /// <summary>
         /// External identifier from ICPC CMS
         /// </summary>
-        [JsonPropertyName("icpc_id")]
+        [JsonProperty("icpc_id")]
         public string? IcpcId { get; init; }
 
         /// <summary>
         /// Name of the team
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public string Name { get; init; } = null!;
 
         /// <summary>
         /// Display name of the team
         /// </summary>
         /// <remarks>If not set, a client should revert to using the name instead.</remarks>
-        [JsonPropertyName("display_name")]
+        [JsonProperty("display_name")]
         public string? DisplayName { get; init; }
 
         /// <summary>
         /// Identifier of the organization (e.g. university or other entity) that this team is affiliated to
         /// </summary>
-        [JsonPropertyName("organization_id")]
+        [JsonProperty("organization_id")]
         public string? OrganizationId { get; init; }
 
         /// <summary>
         /// Identifiers of the group(s) this team is part of (at ICPC WFs these are the super-regions)
         /// </summary>
         /// <remarks>No meaning must be implied or inferred from the order of IDs. The array may be empty.</remarks>
-        [JsonPropertyName("group_ids")]
+        [JsonProperty("group_ids")]
         public string[] GroupIds { get; init; } = Array.Empty<string>();
 
         /// <summary>
-        /// Team members
+        /// Extension data
         /// </summary>
-        [JsonPropertyName("members")]
-        public string[]? Members { get; init; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }

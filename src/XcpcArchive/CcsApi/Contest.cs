@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -79,7 +81,13 @@ namespace XcpcArchive.CcsApi
         /// Must be either <c>pass-fail</c> or <c>score</c>.
         /// Defaults to <c>pass-fail</c> if missing or <c>null</c>.
         /// </remarks>
-        [JsonProperty("scoreboard_type")]
-        public string? ScoreboardType { get; init; } = "pass-fail";
+        [JsonProperty("scoreboard_type", NullValueHandling = NullValueHandling.Ignore)]
+        public string? ScoreboardType { get; init; }
+
+        /// <summary>
+        /// Extension data
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }
