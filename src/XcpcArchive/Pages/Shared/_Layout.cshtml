@@ -77,7 +77,7 @@
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <span class="dropdown-item dropdown-header">Role: admin</span>
               <div class="dropdown-divider"></div>
-              <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut" class="dropdown-item dropdown-footer">
+              <a href="/.auth/logout" class="dropdown-item dropdown-footer">
                 <i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout
               </a>
             </div>
@@ -86,12 +86,12 @@
         else
         {
           <li class="nav-item dropdown">
-            <a class="nav-link" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">
+            <a class="nav-link" href="/.auth/login/aad">
               <i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Login
             </a>
           </li>
         }
-        
+
       </ul>
     </nav><!-- /.navbar -->
 

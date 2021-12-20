@@ -1,12 +1,9 @@
 using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
 using System.Threading.Tasks;
 
 namespace XcpcArchive
@@ -21,14 +18,12 @@ namespace XcpcArchive
             string storageConnectionString = builder.Configuration.GetConnectionString("StorageBlobs");
 
             // Add services to the container.
-            builder.Services
-                .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+            builder.Services.AddEasyAuthAuthentication(
+                options => options.DeveloperMode = builder.Environment.IsDevelopment());
 
             builder.Services
                 .AddRazorPages()
-                .AddRazorRuntimeCompilation()
-                .AddMicrosoftIdentityUI();
+                .AddRazorRuntimeCompilation();
 
             builder.Services
                 .AddControllers()

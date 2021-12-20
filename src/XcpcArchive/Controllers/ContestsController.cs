@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,7 @@ namespace XcpcArchive.Controllers
 
         [HttpPost("{id}")]
         [Consumes("application/zip")]
+        [Authorize]
         public async Task<ActionResult<Contest>> PostNew(
             [FromRoute] string id,
             [FromServices] BlobServiceClient blobServiceClient)
