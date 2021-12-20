@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -63,6 +64,42 @@ namespace XcpcArchive.EasyAuth
             return JsonConvert.DeserializeObject<EasyAuthClientPrincipal>(msClientPrincipalDecoded);
         }
 
+        private IEnumerable<Claim> MapClaims(EasyAuthClientPrincipal.UserClaim claim)
+        {
+            if (claim.Type == "roles")
+            {
+                foreach (string role in claim.Value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    yield return new Claim("role", role);
+                }
+            }
+
+            string? type = claim.Type switch
+            {
+                "preferred_username" => "name",
+                "name" => "preferred_username",
+                "exp" or "aio" or "aud" or "iss" or "iat" or "nbf" => claim.Type,
+                "ipaddr" or "uti" or "c_hash" or "nonce" or "ver" or "rh" => claim.Type,
+                "http://schemas.microsoft.com/claims/authnmethodsreferences" => "amr",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" => "surname",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" => "givenname",
+                "http://schemas.microsoft.com/identity/claims/objectidentifier" => "oid",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" => "sub",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" => "name",
+                "http://schemas.microsoft.com/identity/claims/tenantid" => "tid",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" => "upn",
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" => "role",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" => "email",
+                "http://schemas.microsoft.com/identity/claims/identityprovider" => "idp",
+                _ => null,
+            };
+
+            if (type != null)
+            {
+                yield return new Claim(type, claim.Value);
+            }
+        }
+
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             try
@@ -75,10 +112,10 @@ namespace XcpcArchive.EasyAuth
 
                 ClaimsPrincipal principal = new(
                     new ClaimsIdentity(
-                        clientPrincipal.Claims.Select(x => new Claim(x.Type, x.Value)).ToList(),
+                        clientPrincipal.Claims.SelectMany(MapClaims).ToList(),
                         clientPrincipal.AuthenticationType,
-                        clientPrincipal.NameType,
-                        clientPrincipal.RoleType));
+                        "name",
+                        "role"));
 
                 Context.User = principal;
                 return Task.FromResult(
