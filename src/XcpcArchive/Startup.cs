@@ -4,13 +4,12 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
 
 namespace XcpcArchive
 {
     public class Startup
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +22,11 @@ namespace XcpcArchive
 
             builder.Services
                 .AddRazorPages()
+#if DEBUG
                 .AddRazorRuntimeCompilation();
+#else
+                ;
+#endif
 
             builder.Services
                 .AddControllers()
@@ -57,9 +60,7 @@ namespace XcpcArchive
             app.MapRazorPages();
             app.MapControllers();
 
-            await app.Services.GetRequiredService<StartupInitializer>().DoWorkAsync();
-
-            await app.RunAsync();
+            app.Run();
         }
     }
 }

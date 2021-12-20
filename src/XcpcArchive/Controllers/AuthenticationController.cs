@@ -18,5 +18,17 @@ namespace XcpcArchive.Controllers
                 Claims = User.Claims.Select(c => new EasyAuthClientPrincipal.UserClaim { Type = c.Type, Value = c.Value }),
             };
         }
+
+        [HttpGet("/login")]
+        public IActionResult Login()
+        {
+            return Redirect("/.auth/login/aad?post_login_redirect_uri=%2F");
+        }
+
+        [HttpGet("/logout")]
+        public IActionResult Logout()
+        {
+            return Redirect("/.auth/logout?post_logout_redirect_uri=%2F");
+        }
     }
 }

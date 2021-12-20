@@ -39,7 +39,7 @@ namespace XcpcArchive.Controllers
 
         [HttpPost("{id}")]
         [Consumes("application/zip")]
-        [Authorize]
+        [Authorize(Roles = "XcpcArchive.Uploader")]
         public async Task<ActionResult<Contest>> PostNew(
             [FromRoute] string id,
             [FromServices] BlobServiceClient blobServiceClient)

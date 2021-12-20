@@ -39,7 +39,7 @@ namespace XcpcArchive.EasyAuth
                         {
                             new EasyAuthClientPrincipal.UserClaim { Type = "name", Value = "Developer" },
                             new EasyAuthClientPrincipal.UserClaim { Type = "sub", Value = "Developer" },
-                            new EasyAuthClientPrincipal.UserClaim { Type = "role", Value = "XcpcArchiveUploader" },
+                            new EasyAuthClientPrincipal.UserClaim { Type = "role", Value = "XcpcArchive.Uploader" },
                         }
                     };
                 }
@@ -100,7 +100,7 @@ namespace XcpcArchive.EasyAuth
             }
             else
             {
-                Response.Redirect("/.auth/login/aad");
+                Response.Redirect("/login");
                 return Task.CompletedTask;
             }
         }
