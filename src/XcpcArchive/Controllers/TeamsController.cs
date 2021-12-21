@@ -12,7 +12,7 @@ namespace XcpcArchive.Controllers
     {
         public TeamsController(
             CosmosClient cosmosClient,
-            ILogger<ProblemsController> logger)
+            ILogger<TeamsController> logger)
             : base(cosmosClient, "ccsapi", "teams", logger)
         {
         }
@@ -22,8 +22,10 @@ namespace XcpcArchive.Controllers
         {
             id = id.ToLower().Trim();
             return await GetSql<Team>(
-                new QueryDefinition("SELECT c.id, c.icpc_id, c.name, c.display_name, c.organization_id, c.group_ids FROM c WHERE c._cid = @id ORDER BY c._idlen ASC, c.id ASC")
-                    .WithParameter("@id", id));
+                "SELECT c.id, c.icpc_id, c.name, c.display_name," +
+                      " c.organization_id, c.group_ids " +
+                "FROM c WHERE c._cid = @id ORDER BY c._idlen ASC, c.id ASC",
+                new { id });
         }
 
         [HttpGet("{teamId}")]

@@ -27,7 +27,10 @@ namespace XcpcArchive.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Contest>>> GetAll()
         {
-            return await GetSql<Contest>("SELECT VALUE c FROM c ORDER BY c.start_time DESC");
+            return await GetSql<Contest>(
+                "SELECT c.formal_name, c.penalty_time, c.start_time, c.end_time, c.duration," +
+                      " c.scoreboard_freeze_duration, c.id, c.name, c.shortname, c._statistics " +
+                "FROM c ORDER BY c.start_time DESC");
         }
 
         [HttpGet("{id}")]
@@ -162,6 +165,13 @@ namespace XcpcArchive.Controllers
                         }
                     }
                 }
+
+                contest["_statistics"] = new JObject()
+                {
+                    ["problems"] = insertRecords["problems"].Count,
+                    ["teams"] = insertRecords["teams"].Count,
+                    ["submissions"] = insertRecords["submissions"].Count,
+                };
 
                 await _container.CreateItemAsync(contest, new PartitionKey(id));
                 foreach ((string type, List<JObject> values) in insertRecords)

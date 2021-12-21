@@ -12,7 +12,7 @@ namespace XcpcArchive.Controllers
     {
         public SubmissionsController(
             CosmosClient cosmosClient,
-            ILogger<ProblemsController> logger)
+            ILogger<SubmissionsController> logger)
             : base(cosmosClient, "ccsapi", "submissions", logger)
         {
         }
@@ -22,8 +22,10 @@ namespace XcpcArchive.Controllers
         {
             id = id.ToLower().Trim();
             return await GetSql<Submission>(
-                new QueryDefinition("SELECT c.id, c.language_id, c.problem_id, c.team_id, c.time, c.contest_time, c.entry_point, c.files FROM c WHERE c._cid = @id ORDER BY c._idlen ASC, c.id ASC")
-                    .WithParameter("@id", id));
+                "SELECT c.id, c.language_id, c.problem_id, c.team_id," +
+                      " c.time, c.contest_time, c.entry_point, c.files " +
+                "FROM c WHERE c._cid = @id ORDER BY c._idlen ASC, c.id ASC",
+                new { id });
         }
 
         [HttpGet("{submissionId}")]
@@ -31,7 +33,22 @@ namespace XcpcArchive.Controllers
         {
             id = id.ToLower().Trim();
             submissionId = submissionId.ToLower().Trim();
-            return await GetOne<Submission>(submissionId, id);
+            Submission? submission = await GetOne<Submission>(submissionId, id);
+            submission?.TruncateSingleOutput();
+            return submission;
+        }
+
+        [HttpGet("{submissionId}/files")]
+        [Produces("application/zip")]
+        public async Task<IActionResult> GetFile([FromRoute] string id, [FromRoute] string submissionId)
+        {
+            id = id.ToLower().Trim();
+            submissionId = submissionId.ToLower().Trim();
+            Submission? submission = await GetOne<Submission>(submissionId, id);
+
+            return submission?.FileContent != null
+                ? File(submission.FileContent, "application/zip")
+                : NotFound();
         }
     }
 }

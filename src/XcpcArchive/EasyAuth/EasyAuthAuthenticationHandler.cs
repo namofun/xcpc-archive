@@ -64,20 +64,13 @@ namespace XcpcArchive.EasyAuth
             return JsonConvert.DeserializeObject<EasyAuthClientPrincipal>(msClientPrincipalDecoded);
         }
 
-        private IEnumerable<Claim> MapClaims(EasyAuthClientPrincipal.UserClaim claim)
+        private Claim? MapClaims(EasyAuthClientPrincipal.UserClaim claim)
         {
-            if (claim.Type == "roles")
-            {
-                foreach (string role in claim.Value.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                {
-                    yield return new Claim("role", role);
-                }
-            }
-
             string? type = claim.Type switch
             {
                 "preferred_username" => "name",
                 "name" => "preferred_username",
+                "roles" => "role",
                 "exp" or "aio" or "aud" or "iss" or "iat" or "nbf" => claim.Type,
                 "ipaddr" or "uti" or "c_hash" or "nonce" or "ver" or "rh" => claim.Type,
                 "http://schemas.microsoft.com/claims/authnmethodsreferences" => "amr",
@@ -94,10 +87,7 @@ namespace XcpcArchive.EasyAuth
                 _ => null,
             };
 
-            if (type != null)
-            {
-                yield return new Claim(type, claim.Value);
-            }
+            return type != null ? new Claim(type, claim.Value) : null;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -112,7 +102,7 @@ namespace XcpcArchive.EasyAuth
 
                 ClaimsPrincipal principal = new(
                     new ClaimsIdentity(
-                        clientPrincipal.Claims.SelectMany(MapClaims).ToList(),
+                        clientPrincipal.Claims.Select(MapClaims).Where(c => c != null).ToList()!,
                         clientPrincipal.AuthenticationType,
                         "name",
                         "role"));

@@ -92,11 +92,18 @@
 contests = new Contests("/api");
 
 function loadDetails(contest, i) {
-	$.when(contest.loadProblems(), contest.loadTeams(), contest.loadSubmissions()).done(function () {
-		$("#numProblems" + i).html(contest.getProblems().length);
-		$("#numTeams" + i).html(contest.getTeams().length);
-		$("#numSubmissions" + i).html(contest.getSubmissions().length);
-	})
+	var statistics = contest.info._statistics;
+	if (statistics !== undefined && statistics.problems !== undefined && statistics.teams !== undefined && statistics.submissions !== undefined) {
+		$("#numProblems" + i).html(statistics.problems);
+		$("#numTeams" + i).html(statistics.teams);
+		$("#numSubmissions" + i).html(statistics.submissions);
+	} else {
+		$.when(contest.loadProblems(), contest.loadTeams(), contest.loadSubmissions()).done(function () {
+			$("#numProblems" + i).html(contest.getProblems().length);
+			$("#numTeams" + i).html(contest.getTeams().length);
+			$("#numSubmissions" + i).html(contest.getSubmissions().length);
+		})
+	}
 }
 $(document).ready(function () {
 	$.when(contests.loadContests()).done(function () {

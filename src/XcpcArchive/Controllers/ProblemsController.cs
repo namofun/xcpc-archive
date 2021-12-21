@@ -22,8 +22,10 @@ namespace XcpcArchive.Controllers
         {
             id = id.ToLower().Trim();
             return await GetSql<Problem>(
-                new QueryDefinition("SELECT c.id, c.label, c.name, c.ordinal, c.time_limit, c.rgb, c.color, c.test_data_count FROM c WHERE c._cid = @id ORDER BY c.ordinal")
-                    .WithParameter("@id", id));
+                "SELECT c.id, c.label, c.name, c.ordinal, c.time_limit," +
+                      " c.rgb, c.color, c.test_data_count " +
+                "FROM c WHERE c._cid = @id ORDER BY c.ordinal",
+                new { id });
         }
 
         [HttpGet("{problemId}")]

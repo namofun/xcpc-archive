@@ -1,5 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -8,6 +12,18 @@ namespace XcpcArchive
 {
     public static class CommonHelper
     {
+        private static readonly Action<ILogger, string, long, string, Exception?> LoggingFailedQueryDefinition =
+            LoggerMessage.Define<string, long, string>(
+                LogLevel.Error,
+                new EventId(10060, "CosmosDbQuery"),
+                "Failed to query from [{ContainerName}] within {ElapsedTime}ms.\r\n{QueryText}");
+
+        private static readonly Action<ILogger, string, long, int, string, Exception?> LoggingSucceededQueryDefinition =
+            LoggerMessage.Define<string, long, int, string>(
+                LogLevel.Information,
+                new EventId(10060, "CosmosDbQuery"),
+                "Queried from [{ContainerName}] within {ElapsedTime}ms, {Count} results.\r\n{QueryText}");
+
         public static async Task<JObject> ReadAsJsonAsync(this ZipArchiveEntry entry)
         {
             using Stream entryStream = entry.Open();
@@ -41,5 +57,11 @@ namespace XcpcArchive
             using Stream entryStream = entry.Open();
             return await ReadAllAsync(entryStream, entry.Length).ConfigureAwait(false);
         }
+
+        public static void LogQueryFailure(this ILogger logger, CosmosException exception, Container container, Stopwatch stopwatch, QueryDefinition query)
+            => CommonHelper.LoggingFailedQueryDefinition(logger, container.Id, stopwatch.ElapsedMilliseconds, query.QueryText, exception);
+
+        public static void LogQuery(this ILogger logger, Container container, Stopwatch stopwatch, int count, QueryDefinition query)
+            => CommonHelper.LoggingSucceededQueryDefinition(logger, container.Id, stopwatch.ElapsedMilliseconds, count, query.QueryText, null);
     }
 }

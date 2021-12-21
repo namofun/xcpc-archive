@@ -90,5 +90,13 @@ namespace XcpcArchive.CcsApi
             [JsonProperty("mime")]
             public string Mime { get; init; } = null!;
         }
+
+        /// <summary>
+        /// Truncates for single object output.
+        /// </summary>
+        public void TruncateSingleOutput()
+        {
+            FileContent = null;
+        }
     }
 }
