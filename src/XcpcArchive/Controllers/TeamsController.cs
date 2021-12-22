@@ -32,7 +32,7 @@ namespace XcpcArchive.Controllers
         public async Task<ActionResult<Team?>> GetOne([FromRoute] string id, [FromRoute] string teamId)
         {
             id = id.ToLower().Trim();
-            teamId = teamId.ToLower().Trim();
+            teamId = teamId.Trim();
             return await GetOne<Team>(teamId, id);
         }
     }

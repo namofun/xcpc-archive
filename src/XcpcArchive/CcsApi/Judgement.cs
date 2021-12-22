@@ -1,5 +1,7 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -12,63 +14,69 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Identifier of the judgement
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
 
         /// <summary>
         /// Identifier of the submission judged
         /// </summary>
-        [JsonPropertyName("submission_id")]
+        [JsonProperty("submission_id")]
         public string SubmissionId { get; init; } = null!;
 
         /// <summary>
         /// The verdict of this judgement
         /// </summary>
-        [JsonPropertyName("judgement_type_id")]
+        [JsonProperty("judgement_type_id")]
         public string? JudgementTypeId { get; init; }
 
         /// <summary>
         /// Score for this judgement
         /// </summary>
         /// <remarks>Only relevant if <c>contest:scoreboard_type</c> is <c>score</c>. Defaults to 100 if missing</remarks>
-        [JsonPropertyName("judgement_score")]
+        [JsonProperty("judgement_score", NullValueHandling = NullValueHandling.Ignore)]
         public double? JudgementScore { get; init; }
 
         /// <summary>
         /// Absolute time when judgement started
         /// </summary>
-        [JsonPropertyName("start_time")]
+        [JsonProperty("start_time")]
         public DateTimeOffset StartTime { get; init; }
 
         /// <summary>
         /// Contest relative time when judgement started
         /// </summary>
-        [JsonPropertyName("start_contest_time")]
+        [JsonProperty("start_contest_time")]
         public TimeSpan StartContestTime { get; init; }
 
         /// <summary>
         /// Absolute time when judgement completed
         /// </summary>
-        [JsonPropertyName("end_time")]
+        [JsonProperty("end_time")]
         public DateTimeOffset? EndTime { get; init; }
 
         /// <summary>
         /// Contest relative time when judgement completed
         /// </summary>
-        [JsonPropertyName("end_contest_time")]
+        [JsonProperty("end_contest_time")]
         public TimeSpan? EndContestTime { get; init; }
 
         /// <summary>
         /// Maximum run time in seconds for any test case
         /// </summary>
-        [JsonPropertyName("max_run_time")]
+        [JsonProperty("max_run_time", NullValueHandling = NullValueHandling.Ignore)]
         public double? MaxRunTime { get; init; }
 
         /// <summary>
         /// If this judgement is valid and active
         /// </summary>
         /// <remarks>This is not CCS compatible property</remarks>
-        [JsonPropertyName("valid")]
-        public bool Valid { get; init; }
+        [JsonProperty("valid")]
+        public bool Valid { get; init; } = true;
+
+        /// <summary>
+        /// Extension data
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }

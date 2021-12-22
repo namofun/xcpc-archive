@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -11,37 +13,31 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Identifier of the organization
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
 
         /// <summary>
-        /// External identifier from ICPC CMS
-        /// </summary>
-        [JsonPropertyName("icpc_id")]
-        public string? IcpcId { get; init; }
-
-        /// <summary>
         /// Short display name of the organization
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public string Name { get; init; } = null!;
-
-        /// <summary>
-        /// Short display name of the organization
-        /// </summary>
-        [JsonPropertyName("shortname")]
-        public string ShortName { get; init; } = null!;
 
         /// <summary>
         /// Full organization name if too long for normal display purposes.
         /// </summary>
-        [JsonPropertyName("formal_name")]
+        [JsonProperty("formal_name")]
         public string FormalName { get; init; } = null!;
 
         /// <summary>
         /// ISO 3-letter code of the organization's country
         /// </summary>
-        [JsonPropertyName("country")]
+        [JsonProperty("country", NullValueHandling = NullValueHandling.Ignore)]
         public string? Country { get; init; }
+
+        /// <summary>
+        /// Extension data
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -12,20 +14,26 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Identifier of the award
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
 
         /// <summary>
         /// Award citation, e.g. "Gold medal winner"
         /// </summary>
-        [JsonPropertyName("citation")]
+        [JsonProperty("citation")]
         public string Citation { get; init; } = null!;
 
         /// <summary>
         /// JSON array of team ids receiving this award
         /// </summary>
         /// <remarks>No meaning must be implied or inferred from the order of IDs. The array may be empty.</remarks>
-        [JsonPropertyName("team_ids")]
+        [JsonProperty("team_ids")]
         public string[] TeamIds { get; init; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Extension data
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }

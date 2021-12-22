@@ -32,7 +32,7 @@ namespace XcpcArchive.Controllers
         public async Task<ActionResult<Submission?>> GetOne([FromRoute] string id, [FromRoute] string submissionId)
         {
             id = id.ToLower().Trim();
-            submissionId = submissionId.ToLower().Trim();
+            submissionId = submissionId.Trim();
             Submission? submission = await GetOne<Submission>(submissionId, id);
             submission?.TruncateSingleOutput();
             return submission;
@@ -43,7 +43,7 @@ namespace XcpcArchive.Controllers
         public async Task<IActionResult> GetFile([FromRoute] string id, [FromRoute] string submissionId)
         {
             id = id.ToLower().Trim();
-            submissionId = submissionId.ToLower().Trim();
+            submissionId = submissionId.Trim();
             Submission? submission = await GetOne<Submission>(submissionId, id);
 
             return submission?.FileContent != null

@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -11,37 +13,31 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Identifier of the group
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
-
-        /// <summary>
-        /// External identifier from ICPC CMS
-        /// </summary>
-        [JsonPropertyName("icpc_id")]
-        public string? IcpcId { get; init; }
-
-        /// <summary>
-        /// If group should be hidden from scoreboard
-        /// </summary>
-        [JsonPropertyName("hidden")]
-        public bool Hidden { get; init; }
 
         /// <summary>
         /// Name of the group
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public string Name { get; init; } = null!;
 
         /// <summary>
-        /// Type of this group via scoreboard
+        /// Name of the group
         /// </summary>
-        [JsonPropertyName("sortorder")]
-        public int SortOrder { get; init; }
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Type { get; init; }
 
         /// <summary>
-        /// Type of this group via color
+        /// If group should be hidden from scoreboard
         /// </summary>
-        [JsonPropertyName("color")]
-        public string? Color { get; init; }
+        [JsonProperty("hidden")]
+        public bool Hidden { get; init; }
+
+        /// <summary>
+        /// Extension data
+        /// </summary>
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -11,32 +13,20 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Identifier of the language from table below
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
 
         /// <summary>
         /// Name of the language
         /// </summary>
         /// <remarks>Might not match table below, e.g. if localised.</remarks>
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public string Name { get; init; } = null!;
 
         /// <summary>
-        /// File extensions of the language
+        /// Extension data
         /// </summary>
-        [JsonPropertyName("extensions")]
-        public string[]? Extensions { get; init; }
-
-        /// <summary>
-        /// If allow judge solutions in this language
-        /// </summary>
-        [JsonPropertyName("allow_judge")]
-        public bool AllowJudge { get; init; }
-
-        /// <summary>
-        /// Time factor for running solutions
-        /// </summary>
-        [JsonPropertyName("time_factor")]
-        public double TimeFactor { get; init; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace XcpcArchive.CcsApi
 {
@@ -12,44 +14,44 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Identifier of the run
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; init; } = null!;
 
         /// <summary>
         /// Identifier of the judgement this is part of
         /// </summary>
-        [JsonPropertyName("judgement_id")]
+        [JsonProperty("judgement_id")]
         public string JudgementId { get; init; } = null!;
 
         /// <summary>
         /// Ordering of runs in the judgement
         /// </summary>
         /// <remarks>Must be different for every run in a judgement. Runs for the same test case must have the same ordinal. Must be between 1 and problem:<c>test_data_count</c>.</remarks>
-        [JsonPropertyName("ordinal")]
+        [JsonProperty("ordinal")]
         public int Ordinal { get; init; }
 
         /// <summary>
         /// The verdict of this judgement (i.e. a judgement type)
         /// </summary>
-        [JsonPropertyName("judgement_type_id")]
+        [JsonProperty("judgement_type_id")]
         public string JudgementTypeId { get; init; } = null!;
 
         /// <summary>
         /// Absolute time when run completed
         /// </summary>
-        [JsonPropertyName("time")]
+        [JsonProperty("time")]
         public DateTimeOffset Time { get; init; }
 
         /// <summary>
         /// Contest relative time when run completed
         /// </summary>
-        [JsonPropertyName("contest_time")]
+        [JsonProperty("contest_time")]
         public TimeSpan ContestTime { get; init; }
 
         /// <summary>
-        /// Run time in seconds
+        /// Extension data
         /// </summary>
-        [JsonPropertyName("run_time")]
-        public double RunTime { get; init; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken>? ExtensionData { get; init; }
     }
 }
