@@ -37,15 +37,15 @@ namespace XcpcArchive
             builder.Services.AddSingleton(new CosmosClient(cosmosDbConnectionString));
             builder.Services.AddSingleton(new BlobServiceClient(storageConnectionString));
 
-            builder.Services.AddSingleton<StartupInitializer>();
-            builder.Services.AddTransient<IStartupInitializer, CcsApi.CcsApiInitializer>();
+            builder.Services.AddSingleton<CcsApi.CcsApiImportService>();
+            builder.Services.AddHostedService(sp => sp.GetRequiredService<CcsApi.CcsApiImportService>());
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/error");
             }
 
             app.UseStaticFiles();

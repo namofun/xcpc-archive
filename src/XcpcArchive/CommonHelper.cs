@@ -64,4 +64,18 @@ namespace XcpcArchive
         public static void LogQuery(this ILogger logger, Container container, Stopwatch stopwatch, int count, QueryDefinition query)
             => CommonHelper.LoggingSucceededQueryDefinition(logger, container.Id, stopwatch.ElapsedMilliseconds, count, query.QueryText, null);
     }
+
+    public class RecoverableException : ApplicationException
+    {
+        public RecoverableException(string message) : base(message)
+        {
+        }
+    }
+
+    public class UnrecoverableException : ApplicationException
+    {
+        public UnrecoverableException(string message) : base(message)
+        {
+        }
+    }
 }

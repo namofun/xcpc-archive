@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace XcpcArchive.CcsApi
 {
-    public class CcsApiInitializer : IStartupInitializer
+    public class CcsApiInitializer
     {
         private readonly CosmosClient _cosmosClient;
         private readonly BlobServiceClient _blobServiceClient;

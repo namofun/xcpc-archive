@@ -38,9 +38,9 @@ namespace XcpcArchive.EasyAuth
                         AuthenticationType = authenticationScheme,
                         Claims = new[]
                         {
+                            new EasyAuthClientPrincipal.UserClaim { Type = "preferred_username", Value = "i@yang-er.com" },
                             new EasyAuthClientPrincipal.UserClaim { Type = "name", Value = "Developer" },
-                            new EasyAuthClientPrincipal.UserClaim { Type = "sub", Value = "Developer" },
-                            new EasyAuthClientPrincipal.UserClaim { Type = "role", Value = "XcpcArchive.Uploader" },
+                            new EasyAuthClientPrincipal.UserClaim { Type = "roles", Value = "XcpcArchive.Uploader" },
                         }
                     };
                 }
