@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,22 +7,19 @@ using XcpcArchive.CcsApi;
 
 namespace XcpcArchive.Controllers
 {
-    public class AdministratorController : CosmosControllerBase
+    public class AdministratorController : ApiControllerBase
     {
-        public AdministratorController(
-            CosmosClient cosmosClient,
-            ILogger<AdministratorController> logger)
-            : base(cosmosClient, "ccsapi", "uploaded-jobs", logger)
-        {
-        }
-
         [HttpGet("/api/job/{partitionKey}/{coldId}")]
         [Authorize(Roles = "XcpcArchive.Uploader")]
         public async Task<ActionResult<JobEntry?>> GetJob(
             [FromRoute] string partitionKey,
-            [FromRoute] string coldId)
+            [FromRoute] string coldId,
+            [FromServices] CcsApiClient client)
         {
-            List<JobEntry> entries = await GetSql<JobEntry>(
+            partitionKey = client.NormalizeContestId(partitionKey);
+            coldId = client.NormalizeContestId(coldId);
+
+            List<JobEntry> entries = await client.GetListAsync<JobEntry>(
                 "SELECT * FROM c WHERE c._cid = @partitionKey AND c.externalid = @coldId",
                 new { partitionKey, coldId });
 

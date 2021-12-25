@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// <summary>
     /// The class for job entry
     /// </summary>
-    public class JobEntry
+    public class JobEntry : EntityBase
     {
         /// <summary>
         /// Hot identifier of the job entry

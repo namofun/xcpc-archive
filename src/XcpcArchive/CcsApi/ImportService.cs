@@ -92,7 +92,7 @@ namespace XcpcArchive.CcsApi
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _containerCreateTask = InitializeAsync();
+            _containerCreateTask = _ccsApiClient.InitializeAsync();
             await _containerCreateTask.ConfigureAwait(false);
 
             while (!stoppingToken.IsCancellationRequested)
@@ -145,28 +145,6 @@ namespace XcpcArchive.CcsApi
                     _logger.LogError(ex, "Unknown exception during finalizing job {JobColdId}.", entry.Key.ColdId);
                 }
             }
-        }
-
-        private async Task InitializeAsync()
-        {
-            await _ccsApiClient.InitializeAsync().ConfigureAwait(false);
-
-            ContainerProperties properties = new()
-            {
-                Id = "uploaded-jobs",
-                PartitionKeyPath = "/_cid",
-                UniqueKeyPolicy =
-                {
-                    UniqueKeys =
-                    {
-                        new UniqueKey() { Paths = { "/externalid" } },
-                    }
-                },
-            };
-
-            await _database
-                .CreateContainerIfNotExistsAsync(properties)
-                .ConfigureAwait(false);
         }
 
         private async Task ImportAsync(JobEntry entry, byte[] package)

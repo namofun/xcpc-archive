@@ -1,11 +1,13 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -41,6 +43,7 @@ namespace XcpcArchive.CcsApi
                 { typeof(Run), "runs" },
                 { typeof(Submission), "submissions" },
                 { typeof(Team), "teams" },
+                { typeof(JobEntry), "uploaded-jobs" },
             };
         }
 
@@ -52,6 +55,11 @@ namespace XcpcArchive.CcsApi
 
             foreach (string collectionName in _containerMapping.Values)
             {
+                if (collectionName == "uploaded-jobs")
+                {
+                    continue;
+                }
+
                 ContainerProperties properties = new()
                 {
                     Id = collectionName,
@@ -69,6 +77,20 @@ namespace XcpcArchive.CcsApi
 
                 await _database.CreateContainerIfNotExistsAsync(properties).ConfigureAwait(false);
             }
+
+            await _database .CreateContainerIfNotExistsAsync(
+                new ContainerProperties()
+                {
+                    Id = "uploaded-jobs",
+                    PartitionKeyPath = "/_cid",
+                    UniqueKeyPolicy =
+                    {
+                        UniqueKeys =
+                        {
+                            new UniqueKey() { Paths = { "/externalid" } },
+                        }
+                    },
+                });
 
             await _blobs.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
@@ -114,6 +136,13 @@ namespace XcpcArchive.CcsApi
             }
 
             return GetListAsync<TEntity>(queryDefinition);
+        }
+
+        [Obsolete("We only use this to generate SQL at debug time")]
+        public Task<List<TEntity>> GetListAsync<TEntity>(Func<IOrderedQueryable<TEntity>, IQueryable<TEntity>> linq) where TEntity : EntityBase
+        {
+            Container coll = _database.GetContainer(_containerMapping[typeof(TEntity)]);
+            return GetListAsync<TEntity>(linq(coll.GetItemLinqQueryable<TEntity>()).ToQueryDefinition());
         }
 
         public async Task<TEntity?> GetEntityAsync<TEntity>(string id, string partitionKey) where TEntity : EntityBase
