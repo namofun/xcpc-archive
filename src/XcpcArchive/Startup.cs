@@ -21,15 +21,10 @@ namespace XcpcArchive
                 options => options.DeveloperMode = builder.Environment.IsDevelopment());
 
             builder.Services
-                .AddRazorPages()
+                .AddControllersWithViews()
 #if DEBUG
-                .AddRazorRuntimeCompilation();
-#else
-                ;
+                .AddRazorRuntimeCompilation()
 #endif
-
-            builder.Services
-                .AddControllers()
                 .AddNewtonsoftJson();
 
             builder.Services.AddHttpClient();
@@ -56,7 +51,6 @@ namespace XcpcArchive
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapRazorPages();
             app.MapControllers();
 
             app.Run();

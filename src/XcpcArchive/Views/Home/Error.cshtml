@@ -1,15 +1,15 @@
-﻿@page "/error"
-@model ErrorModel
+﻿@using System.Diagnostics
 @{
     ViewData["Title"] = "Error";
+    string requestId = Activity.Current?.Id ?? Context.TraceIdentifier;
 }
 
 <div class="container-fluid">
   <div class="row">
     <div id="errors" class="col-12">
       <p class="text-danger">An error occurred while processing your request.</p>
-      
-      @if (Model.ShowRequestId)
+
+      @if (!string.IsNullOrEmpty(requestId))
       {
         <p>
           Request ID: <code>@Model.RequestId</code>

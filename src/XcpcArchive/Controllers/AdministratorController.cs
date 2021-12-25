@@ -45,7 +45,7 @@ namespace XcpcArchive.Controllers
 
                 return entry == null
                     ? Conflict(new { result = "Job with same id already exists." })
-                    : CreatedAtAction(nameof(GetJob), entry);
+                    : CreatedAtAction(nameof(GetJob), new { entry.PartitionKey, entry.ColdId }, entry);
             }
             else
             {
