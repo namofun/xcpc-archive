@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// Runs are judgements of individual test cases of a submission.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Runs">More detail</a>
     /// </summary>
-    public class Run
+    public class Run : EntityBase
     {
         /// <summary>
         /// Identifier of the run

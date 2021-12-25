@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// Teams competing in the contest.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Teams">More detail</a>
     /// </summary>
-    public class Team
+    public class Team : EntityBase
     {
         /// <summary>
         /// Identifier of the team

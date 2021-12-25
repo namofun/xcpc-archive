@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// Awards such as medals, first to solve, etc.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Awards">More detail</a>
     /// </summary>
-    public class Award
+    public class Award : EntityBase
     {
         /// <summary>
         /// Identifier of the award

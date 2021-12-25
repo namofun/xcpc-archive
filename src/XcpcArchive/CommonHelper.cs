@@ -3,9 +3,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace XcpcArchive
@@ -56,6 +58,20 @@ namespace XcpcArchive
         {
             using Stream entryStream = entry.Open();
             return await ReadAllAsync(entryStream, entry.Length).ConfigureAwait(false);
+        }
+
+        public static async Task<List<T>> ToListAsync<T>(this FeedIterator<T> iterator, CancellationToken cancellationToken = default)
+        {
+            List<T> result = new();
+            while (iterator.HasMoreResults)
+            {
+                foreach (T item in await iterator.ReadNextAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
         }
 
         public static void LogQueryFailure(this ILogger logger, CosmosException exception, Container container, Stopwatch stopwatch, QueryDefinition query)

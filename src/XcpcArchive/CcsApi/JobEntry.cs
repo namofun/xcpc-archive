@@ -44,13 +44,15 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Job status
         /// </summary>
-        [JsonProperty("status", ItemConverterType = typeof(StringEnumConverter))]
+        [JsonProperty("status")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public JobStatus Status { get; set; }
 
         /// <summary>
         /// Job type
         /// </summary>
-        [JsonProperty("type", ItemConverterType = typeof(StringEnumConverter))]
+        [JsonProperty("type")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public JobType Type { get; init; }
 
         /// <summary>

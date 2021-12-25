@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// Submissions, a.k.a. attempts to solve problems in the contest.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Submissions">More detail</a>
     /// </summary>
-    public class Submission
+    public class Submission : EntityBase
     {
         /// <summary>
         /// Identifier of the submission

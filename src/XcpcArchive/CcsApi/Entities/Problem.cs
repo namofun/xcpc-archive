@@ -8,7 +8,7 @@ namespace XcpcArchive.CcsApi
     /// The problems to be solved in the contest.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Problems">More detail</a>
     /// </summary>
-    public class Problem
+    public class Problem : EntityBase
     {
         /// <summary>
         /// Identifier of the problem, at the WFs the directory name of the problem archive

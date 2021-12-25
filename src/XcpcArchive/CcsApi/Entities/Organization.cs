@@ -8,7 +8,7 @@ namespace XcpcArchive.CcsApi
     /// Teams can be associated with organizations which will have some associated information, e.g. a logo. Typically organizations will be universities.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Organizations">More detail</a>
     /// </summary>
-    public class Organization
+    public class Organization : EntityBase
     {
         /// <summary>
         /// Identifier of the organization

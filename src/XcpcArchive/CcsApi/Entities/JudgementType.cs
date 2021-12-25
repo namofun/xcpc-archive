@@ -8,7 +8,7 @@ namespace XcpcArchive.CcsApi
     /// Judgement types are the possible responses from the system when judging a submission.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Judgement_Types">More detail</a>
     /// </summary>
-    public class JudgementType
+    public class JudgementType : EntityBase
     {
         /// <summary>
         /// Identifier of the judgement type

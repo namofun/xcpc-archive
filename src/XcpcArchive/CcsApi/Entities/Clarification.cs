@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// Clarification message sent between teams and judges, a.k.a. clarification requests (questions from teams) and clarifications (answers from judges).
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Clarifications">More detail</a>
     /// </summary>
-    public class Clarification
+    public class Clarification : EntityBase
     {
         /// <summary>
         /// Identifier of the clarification

@@ -23,11 +23,13 @@ namespace XcpcArchive.CcsApi
         private readonly BlobServiceClient _blobServiceClient;
         private readonly ConcurrentQueue<KeyValuePair<JobEntry, byte[]>> _queue;
         private readonly ILogger _logger;
+        private readonly CcsApiClient _ccsApiClient;
         private Task? _containerCreateTask;
 
         public CcsApiImportService(
             CosmosClient cosmosClient,
             BlobServiceClient blobServiceClient,
+            CcsApiClient ccsApiClient,
             ILoggerFactory loggerFactory)
         {
             _semaphore = new SemaphoreSlim(0);
@@ -35,6 +37,7 @@ namespace XcpcArchive.CcsApi
             _database = cosmosClient.GetDatabase("ccsapi");
             _uploadedJobs = _database.GetContainer("uploaded-jobs");
             _blobServiceClient = blobServiceClient;
+            _ccsApiClient = ccsApiClient;
             _logger = loggerFactory.CreateLogger("XcpcArchive.CcsApi.ImportService");
         }
 
@@ -146,9 +149,7 @@ namespace XcpcArchive.CcsApi
 
         private async Task InitializeAsync()
         {
-            await new CcsApiInitializer(_database.Client, _blobServiceClient)
-                .DoWorkAsync()
-                .ConfigureAwait(false);
+            await _ccsApiClient.InitializeAsync().ConfigureAwait(false);
 
             ContainerProperties properties = new()
             {

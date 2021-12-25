@@ -8,7 +8,7 @@ namespace XcpcArchive.CcsApi
     /// Languages that are available for submission at the contest.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Languages">More detail</a>
     /// </summary>
-    public class Language
+    public class Language : EntityBase
     {
         /// <summary>
         /// Identifier of the language from table below

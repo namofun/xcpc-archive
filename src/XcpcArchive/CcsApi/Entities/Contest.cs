@@ -17,7 +17,7 @@ namespace XcpcArchive.CcsApi
     /// <a href="https://ccs-specs.icpc.io/contest_api">CCS Specs (GitHub)</a>
     /// </list>
     /// </remarks>
-    public class Contest
+    public class Contest : EntityBase
     {
         /// <summary>
         /// Identifier of the current contest

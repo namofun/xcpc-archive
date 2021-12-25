@@ -37,6 +37,7 @@ namespace XcpcArchive
             builder.Services.AddSingleton(new CosmosClient(cosmosDbConnectionString));
             builder.Services.AddSingleton(new BlobServiceClient(storageConnectionString));
 
+            builder.Services.AddSingleton<CcsApi.CcsApiClient>();
             builder.Services.AddSingleton<CcsApi.CcsApiImportService>();
             builder.Services.AddHostedService(sp => sp.GetRequiredService<CcsApi.CcsApiImportService>());
 

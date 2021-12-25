@@ -8,7 +8,7 @@ namespace XcpcArchive.CcsApi
     /// Grouping of teams. At the World Finals these are the super regions, at regionals these are often different sites.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Groups">More detail</a>
     /// </summary>
-    public class Group
+    public class Group : EntityBase
     {
         /// <summary>
         /// Identifier of the group

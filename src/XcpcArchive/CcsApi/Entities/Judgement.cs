@@ -9,7 +9,7 @@ namespace XcpcArchive.CcsApi
     /// Judgements for submissions in the contest.
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Judgements">More detail</a>
     /// </summary>
-    public class Judgement
+    public class Judgement : EntityBase
     {
         /// <summary>
         /// Identifier of the judgement
