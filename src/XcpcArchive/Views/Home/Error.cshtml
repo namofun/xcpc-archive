@@ -1,7 +1,7 @@
 ﻿@using System.Diagnostics
 @{
     ViewData["Title"] = "Error";
-    string requestId = Activity.Current?.Id ?? Context.TraceIdentifier;
+    string? requestId = Activity.Current?.Id ?? Context.TraceIdentifier;
 }
 
 <div class="container-fluid">
@@ -12,7 +12,7 @@
       @if (!string.IsNullOrEmpty(requestId))
       {
         <p>
-          Request ID: <code>@Model.RequestId</code>
+          Request ID: <code>@requestId</code>
         </p>
       }
     </div>
