@@ -39,5 +39,10 @@ namespace XcpcArchive.CcsApi.Entities
         /// </summary>
         [JsonExtensionData]
         public IDictionary<string, JToken>? ExtensionData { get; init; }
+
+        /// <summary>
+        /// Unknown group place holder
+        /// </summary>
+        public static Group Unknown { get; } = new Group() { Hidden = true };
     }
 }

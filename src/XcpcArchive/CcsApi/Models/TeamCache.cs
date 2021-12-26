@@ -16,5 +16,8 @@ namespace XcpcArchive.CcsApi.Models
 
         [JsonProperty("groups")]
         public string[] Groups { get; init; } = Array.Empty<string>();
+
+        [JsonProperty("hidden", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public bool Hidden { get; init; }
     }
 }

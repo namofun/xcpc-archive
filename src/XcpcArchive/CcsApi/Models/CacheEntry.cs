@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using XcpcArchive.CcsApi.Entities;
 
@@ -34,7 +35,7 @@ namespace XcpcArchive.CcsApi.Models
 
         [JsonProperty("_ts")]
         [JsonConverter(typeof(UnixDateTimeConverter))]
-        public long LastUpdateTimeStamp { get; init; }
+        public DateTimeOffset LastUpdateTimeStamp { get; init; } = DateTimeOffset.Now;
 
         [JsonExtensionData]
         public IDictionary<string, JToken>? ExtensionData { get; set; }

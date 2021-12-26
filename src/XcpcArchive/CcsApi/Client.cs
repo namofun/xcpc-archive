@@ -50,6 +50,16 @@ namespace XcpcArchive.CcsApi
             };
         }
 
+        public Database GetDatabase()
+        {
+            return _database;
+        }
+
+        public BlobContainerClient GetBlobContainer()
+        {
+            return _blobs;
+        }
+
         public async Task InitializeAsync()
         {
             await _database.Client.CreateDatabaseIfNotExistsAsync(

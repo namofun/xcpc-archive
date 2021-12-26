@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -21,24 +20,20 @@ namespace XcpcArchive.CcsApi
         private readonly SemaphoreSlim _semaphore;
         private readonly Database _database;
         private readonly Container _uploadedJobs;
-        private readonly BlobServiceClient _blobServiceClient;
         private readonly ConcurrentQueue<KeyValuePair<JobEntry, byte[]>> _queue;
         private readonly ILogger _logger;
         private readonly CcsApiClient _ccsApiClient;
         private Task? _containerCreateTask;
 
         public CcsApiImportService(
-            CosmosClient cosmosClient,
-            BlobServiceClient blobServiceClient,
             CcsApiClient ccsApiClient,
             ILoggerFactory loggerFactory)
         {
             _semaphore = new SemaphoreSlim(0);
             _queue = new ConcurrentQueue<KeyValuePair<JobEntry, byte[]>>();
-            _database = cosmosClient.GetDatabase("ccsapi");
-            _uploadedJobs = _database.GetContainer("uploaded-jobs");
-            _blobServiceClient = blobServiceClient;
             _ccsApiClient = ccsApiClient;
+            _database = ccsApiClient.GetDatabase();
+            _uploadedJobs = _database.GetContainer("uploaded-jobs");
             _logger = loggerFactory.CreateLogger("XcpcArchive.CcsApi.ImportService");
         }
 
@@ -73,9 +68,10 @@ namespace XcpcArchive.CcsApi
 
             try
             {
-                await _blobServiceClient
-                    .GetBlobContainerClient("ccsapi")
-                    .UploadBlobAsync($"{entry.PartitionKey}_{entry.ColdId}.zip", BinaryData.FromBytes(package));
+                await _ccsApiClient.GetBlobContainer()
+                    .UploadBlobAsync(
+                        $"{entry.PartitionKey}_{entry.ColdId}.zip",
+                        BinaryData.FromBytes(package));
             }
             catch (Azure.RequestFailedException ex)
             {
