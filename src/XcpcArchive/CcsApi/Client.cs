@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using XcpcArchive.CcsApi.Entities;
+using XcpcArchive.CcsApi.Models;
 
 namespace XcpcArchive.CcsApi
 {
@@ -44,6 +46,7 @@ namespace XcpcArchive.CcsApi
                 { typeof(Submission), "submissions" },
                 { typeof(Team), "teams" },
                 { typeof(JobEntry), "uploaded-jobs" },
+                { typeof(CacheEntry), "cache" },
             };
         }
 
@@ -55,7 +58,7 @@ namespace XcpcArchive.CcsApi
 
             foreach (string collectionName in _containerMapping.Values)
             {
-                if (collectionName == "uploaded-jobs")
+                if (collectionName == "uploaded-jobs" || collectionName == "cache")
                 {
                     continue;
                 }
@@ -78,7 +81,7 @@ namespace XcpcArchive.CcsApi
                 await _database.CreateContainerIfNotExistsAsync(properties).ConfigureAwait(false);
             }
 
-            await _database .CreateContainerIfNotExistsAsync(
+            await _database.CreateContainerIfNotExistsAsync(
                 new ContainerProperties()
                 {
                     Id = "uploaded-jobs",
@@ -92,6 +95,13 @@ namespace XcpcArchive.CcsApi
                     },
                 });
 
+            await _database.CreateContainerIfNotExistsAsync(
+                new ContainerProperties()
+                {
+                    Id = "cache",
+                    PartitionKeyPath = "/_cid",
+                });
+
             await _blobs.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
 
@@ -100,9 +110,8 @@ namespace XcpcArchive.CcsApi
             return id.ToLower().Trim();
         }
 
-        public async Task<List<TEntity>> GetListAsync<TEntity>(QueryDefinition sql) where TEntity : EntityBase
+        private async Task<List<TEntity>> GetListInternalAsync<TEntity>(Container coll, QueryDefinition sql)
         {
-            Container coll = _database.GetContainer(_containerMapping[typeof(TEntity)]);
             Stopwatch timer = Stopwatch.StartNew();
             List<TEntity> result;
             try
@@ -122,9 +131,25 @@ namespace XcpcArchive.CcsApi
             return result;
         }
 
+        public Task<List<TEntity>> GetListAsync<TEntity>(QueryDefinition sql) where TEntity : EntityBase
+        {
+            return GetListInternalAsync<TEntity>(_database.GetContainer(_containerMapping[typeof(TEntity)]), sql);
+        }
+
         public Task<List<TEntity>> GetListAsync<TEntity>(string sql) where TEntity : EntityBase
         {
             return GetListAsync<TEntity>(new QueryDefinition(sql));
+        }
+
+        public Task<List<TResult>> GetCacheAsync<TResult>(string sql, object param)
+        {
+            QueryDefinition queryDefinition = new(sql);
+            foreach ((string paramName, JToken? paramValue) in JObject.FromObject(param))
+            {
+                queryDefinition.WithParameter("@" + paramName, paramValue);
+            }
+
+            return GetListInternalAsync<TResult>(_database.GetContainer("cache"), queryDefinition);
         }
 
         public Task<List<TEntity>> GetListAsync<TEntity>(string sql, object param) where TEntity : EntityBase

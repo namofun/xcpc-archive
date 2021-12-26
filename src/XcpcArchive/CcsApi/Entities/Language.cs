@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace XcpcArchive.CcsApi
+namespace XcpcArchive.CcsApi.Entities
 {
     /// <summary>
     /// Languages that are available for submission at the contest.

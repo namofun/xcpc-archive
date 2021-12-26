@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using XcpcArchive.CcsApi;
+using XcpcArchive.CcsApi.Models;
 
 namespace XcpcArchive.Controllers
 {
@@ -29,7 +30,7 @@ namespace XcpcArchive.Controllers
         [HttpPost("/api/upload/ccsapi/{id}")]
         [Consumes("application/zip")]
         [Authorize(Roles = "XcpcArchive.Uploader")]
-        public async Task<ActionResult<Contest>> PostNew(
+        public async Task<ActionResult<JobEntry>> PostNew(
             [FromRoute] string id,
             [FromServices] CcsApiImportService importService)
         {

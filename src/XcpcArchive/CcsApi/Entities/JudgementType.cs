@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace XcpcArchive.CcsApi
+namespace XcpcArchive.CcsApi.Entities
 {
     /// <summary>
     /// Judgement types are the possible responses from the system when judging a submission.

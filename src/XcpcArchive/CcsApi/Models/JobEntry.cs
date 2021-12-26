@@ -3,8 +3,9 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using XcpcArchive.CcsApi.Entities;
 
-namespace XcpcArchive.CcsApi
+namespace XcpcArchive.CcsApi.Models
 {
     /// <summary>
     /// The class for job entry

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace XcpcArchive.CcsApi
+namespace XcpcArchive.CcsApi.Entities
 {
     /// <summary>
     /// The problems to be solved in the contest.
@@ -43,13 +43,13 @@ namespace XcpcArchive.CcsApi
         /// <summary>
         /// Hexadecimal RGB value of problem color as specified in HTML hexadecimal colors, e.g. '#AC00FF' or '#fff'
         /// </summary>
-        [JsonProperty("rgb")]
+        [JsonProperty("rgb", NullValueHandling = NullValueHandling.Ignore)]
         public string? Rgb { get; init; }
 
         /// <summary>
         /// Human readable color description associated to the RGB value
         /// </summary>
-        [JsonProperty("color")]
+        [JsonProperty("color", NullValueHandling = NullValueHandling.Ignore)]
         public string? Color { get; init; }
 
         /// <summary>

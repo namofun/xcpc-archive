@@ -1,4 +1,4 @@
-﻿namespace XcpcArchive.CcsApi
+﻿namespace XcpcArchive.CcsApi.Entities
 {
     public class EntityBase
     {

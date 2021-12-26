@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace XcpcArchive.CcsApi
+namespace XcpcArchive.CcsApi.Entities
 {
     /// <summary>
     /// Clarification message sent between teams and judges, a.k.a. clarification requests (questions from teams) and clarifications (answers from judges).

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace XcpcArchive.CcsApi
+namespace XcpcArchive.CcsApi.Entities
 {
     /// <summary>
     /// Teams can be associated with organizations which will have some associated information, e.g. a logo. Typically organizations will be universities.
