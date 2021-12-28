@@ -43,6 +43,10 @@ namespace XcpcArchive.Controllers
                 "SELECT * FROM c WHERE c._cid = @id ORDER BY c.slot",
                 new { id });
 
+            Response.Headers.Add(
+                "x-cache-slots",
+                caches.Select(c => $"{c.Id}|{c.LastUpdateTimeStamp.ToUnixTimeSeconds()}").ToArray());
+
             JArray array = new JArray();
             if (caches.Count > 0 && caches[0].Id == id + "--slot-0")
             {

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.ApplicationInsights.AspNetCore.IJavaScriptSnippet JavaScriptSnippet
+<!DOCTYPE html>
 
 <html lang="en">
 
@@ -9,6 +10,7 @@
 
   <title>XCPC Archive</title>
 
+  @Html.Raw(JavaScriptSnippet.FullScript)
   <script src="/js/jquery.min.js"></script>
   <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="/js/adminlte.min.js"></script>
