@@ -1,4 +1,10 @@
 ﻿@inject Microsoft.ApplicationInsights.AspNetCore.IJavaScriptSnippet JavaScriptSnippet
+@functions {
+    string IsActive(string? expectedController, string? expectedAction)
+        => (expectedController == null || ViewContext.ActionDescriptor.RouteValues["controller"] == expectedController)
+            && (expectedAction == null || ViewContext.ActionDescriptor.RouteValues["action"] == expectedAction)
+            ? "active" : "";
+}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -120,55 +126,83 @@
                with font-awesome or any other icon font library -->
 
             <li class="nav-item">
-              <a href="/presentation/admin/web"
-                class="nav-link">
-                <i class="nav-icon fas fa-address-card"></i>
-                <p>Presentation Admin</p>
+              <a href="/contests"
+                class="nav-link @IsActive("Contests", "Index")">
+                <i class="nav-icon fas fa-home"></i>
+                <p>Home</p>
               </a>
             </li>
 
-            <li class="nav-item has-treeview menu-closed">
-              <a href="#" class="nav-link ">
-                <i class="nav-icon fas fa-video"></i>
+@if (((string)ViewContext.RouteData.Values["controller"]!) == "Contests"
+    && ViewContext.RouteData.Values.TryGetValue("id", out object? idobj)
+    && idobj is string cid)
+{
+            <li class="nav-item has-treeview menu-open">
+              <a href="#" class="nav-link active">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>
-                  Video
-                  <i class="right fas fa-angle-left"></i>
+                  (unnamed contest)
+                  <i class="right fas fa-angle-left"></i><span class="badge badge-danger">!</span>
                 </p>
               </a>
 
-              <ul class="nav nav-treeview">
-                
+              <ul class="nav nav-treeview" style="margin-left:10px">
+
                 <li class="nav-item">
-                  <a href="/video/control/1"
-                    class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Channel 1</p>
+                  <a href="/contests/@cid" class="nav-link @IsActive("Contests", "Overview")">
+                    <i class="far fa-flag nav-icon"></i>
+                    <p>Overview</p>
                   </a>
                 </li>
-                
+
                 <li class="nav-item">
-                  <a href="/video/control/2"
-                    class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Channel 2</p>
+                  <a href="/contests/@cid/details" class="nav-link @IsActive("Contests", "Details")">
+                    <i class="far fa-compass nav-icon"></i>
+                    <p>Details</p>
                   </a>
                 </li>
-                
+
                 <li class="nav-item">
-                  <a href="/video/control/3"
-                    class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Channel 3</p>
+                  <a href="/contests/@cid/registration" class="nav-link @IsActive("Contests", "Registration")">
+                    <i class="far fa-user nav-icon"></i>
+                    <p>Registration</p>
                   </a>
                 </li>
-                
+
+                <li class="nav-item">
+                  <a href="/contests/@cid/clarifications" class="nav-link @IsActive("Contests", "Clarifications")">
+                    <i class="far fa-comments nav-icon"></i>
+                    <p>Clarifications</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="/contests/@cid/submissions" class="nav-link @IsActive("Contests", "Submissions")">
+                    <i class="far fa-file-code nav-icon"></i>
+                    <p>Submissions</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="/contests/@cid/scoreboard" class="nav-link @IsActive("Contests", "Scoreboard")">
+                    <i class="far fa-clipboard nav-icon"></i>
+                    <p>Scoreboard</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="/contests/@cid/reports" class="nav-link @IsActive("Contests", "Reports")">
+                    <i class="far fa-file-alt nav-icon"></i>
+                    <p>Reports</p>
+                  </a>
+                </li>
               </ul>
             </li>
-            
+}
 
             <li class="nav-item">
               <a href="/about"
-                class="nav-link active">
+                class="nav-link @IsActive("Home", "About")">
                 <i class="nav-icon fas fa-info"></i>
                 <p>About</p>
               </a>

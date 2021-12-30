@@ -28,3 +28,9 @@ body.dark-mode .table-danger {
 body.dark-mode .table-warning {
     background-color: #f39c12 !important;
 }
+
+.sidebar-mini .main-sidebar .nav-treeview .nav-link,
+.sidebar-mini-md .main-sidebar .nav-treeview .nav-link,
+.sidebar-mini-xs .main-sidebar .nav-treeview .nav-link {
+    width: calc(240px - .5rem * 2);
+}

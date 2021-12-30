@@ -6,6 +6,7 @@ namespace XcpcArchive.Controllers
     public class ContestsController : Controller
     {
         [HttpGet]
+        [HttpGet("/")]
         public IActionResult Index()
         {
             return View();
