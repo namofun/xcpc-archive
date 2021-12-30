@@ -1,0 +1,375 @@
+﻿@{
+    ViewData["Title"] = "Contests";
+    string cid = (string)ViewContext.RouteData.Values["id"]!;
+}
+
+<script src="/js/contest.js"></script>
+<script src="/js/model.js"></script>
+<script src="/js/luxon.min.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/types.js"></script>
+<script src="/js/mustache.min.js"></script>
+<script type="text/javascript">
+contest = new Contest("/api", "@cid");
+</script>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-9">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title">Contest</h4>
+          <div class="card-tools">
+            <button id="-api" type="button" class="btn btn-tool">API</button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-sm table-hover table-striped table-head-fixed">
+            <tbody>
+              <tr>
+                <td><b>Name:</b></td>
+                <td id="info-name"></td>
+                <td><b>Start:</b></td>
+                <td id="info-start"></td>
+              </tr>
+              <tr>
+                <td><b>Duration:</b></td>
+                <td id="info-duration"></td>
+                <td><b>Freeze duration:</b></td>
+                <td id="info-freeze"></td>
+              </tr>
+              <tr>
+                <td class="align-middle"><b>Logo:</b></td>
+                <td class="table-dark" rowspan=2 id="logo"></td>
+                <td class="align-middle"><b>Banner:</b></td>
+                <td class="table-dark" rowspan=2 id="banner"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+<script type="text/javascript">
+registerContestObjectTable("");
+
+$(document).ready(function () {
+  function update() {
+    var info = contest.getInfo();
+    if (info.name != null)
+      $("#info-name").html(sanitizeHTML(info.name));
+    if (info.start_time != null)
+      $("#info-start").html(formatTimestamp(info.start_time));
+    if (info.duration != null)
+      $("#info-duration").html(formatTime(parseTime(info.duration)));
+    if (info.scoreboard_freeze_duration != null)
+      $("#info-freeze").html(formatTime(parseTime(info.scoreboard_freeze_duration)));
+
+    var logo = bestSquareLogo(info.logo, 50);
+    console.log(info.name + " - " + info.logo + " -> " + logo);
+    if (logo != null) {
+      var elem = document.createElement("img");
+      elem.setAttribute("src", "/api/" + logo.href);
+      elem.setAttribute("height", "40");
+      document.getElementById("logo").appendChild(elem);
+    }
+    var banner = bestLogo(info.banner, 100, 50);
+    console.log(info.name + " - " + info.banner + " -> " + banner);
+    if (banner != null) {
+      var elem = document.createElement("img");
+      elem.setAttribute("src", "/api/" + banner.href);
+      elem.setAttribute("height", "40");
+      document.getElementById("banner").appendChild(elem);
+    }
+  }
+
+  $.when(contest.loadInfo()).done(function () {
+    update()
+  }).fail(function (result) {
+    console.log("Error loading page: " + result);
+  })
+})
+</script>
+        </div>
+        <div class="col-3">
+            <div id="accordion">
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseState">State</a></h4>
+        <div class="card-tools">
+            <button id="state-api" type="button" class="btn btn-tool">API</button>
+        </div>
+    </div>
+    <div id="collapseState" class="panel-collapse collapse in">
+    <div class="card-body p-0">
+        <table class="table table-sm table-hover table-striped table-head-fixed">
+            <tbody>
+                <tr>
+                    <td><b>Started:</b></td>
+                    <td id="state-started"></td>
+                </tr>
+                <tr>
+                    <td><b>Frozen:</b></td>
+                    <td id="state-frozen"></td>
+                </tr>
+                <tr>
+                    <td><b>Ended:</b></td>
+                    <td id="state-ended"></td>
+                </tr>
+                <tr>
+                    <td><b>Finalized:</b></td>
+                    <td id="state-finalized"></td>
+                </tr>
+                <tr>
+                    <td><b>Thawed:</b></td>
+                    <td id="state-thawed"></td>
+                </tr>
+                <tr>
+                    <td><b>End of updates:</b></td>
+                    <td id="state-end_of_updates"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+registerContestObjectTable("state");
+
+$(document).ready(function () {
+    $.when(contest.loadState()).done(function () {
+        state = contest.getState();
+        $("#state-started").html(formatTimestamp(state.started));
+        $("#state-frozen").html(formatTimestamp(state.frozen));
+        $("#state-ended").html(formatTimestamp(state.ended));
+        $("#state-finalized").html(formatTimestamp(state.finalized));
+        $("#state-thawed").html(formatTimestamp(state.thawed));
+        $("#state-end_of_updates").html(formatTimestamp(state.end_of_updates));
+    }).fail(function (result) {
+    	console.log("Error loading state: " + result);
+    })
+})
+</script>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5"><div id="accordion">
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseLanguages">Languages</a></h4>
+        <div class="card-tools">
+            <span id="languages-count" data-toggle="tooltip" title="?" class="badge bg-primary">?</span>
+            <button id="languages-api" type="button" class="btn btn-tool">API</button>
+        </div>
+    </div>
+    <div id="collapseLanguages" class="panel-collapse collapse in">
+    <div class="card-body p-0">
+        <table id="languages-table" class="table table-sm table-hover table-striped table-head-fixed">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Entry point</th>
+                    <th>Extensions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+<script type="text/html" id="languages-template">
+  <td><a href="{{api}}">{{id}}</a></td>
+  <td>{{name}}</td>
+  <td>
+    {{#entry_point_required}}<span class="badge badge-success"><i class="fas fa-check"></i></span> {{entry_point_name}}{{/entry_point_required}}
+    {{^entry_point_required}}<span class="badge badge-danger"><i class="fas fa-times"></i></span>{{/entry_point_required}}
+  </td>
+  <td>{{extensions}}</td>
+</script>
+<script type="text/javascript">
+registerContestObjectTable("languages");
+
+$(document).ready(function () {
+    $.when(contest.loadLanguages()).done(function () {
+        fillContestObjectTable("languages", contest.getLanguages());
+    }).fail(function (result) {
+    	console.log("Error loading languages: " + result);
+    });
+});
+</script></div>
+        <div class="col-7"><div id="accordion">
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseJudgementTypes">Judgement Types</a></h4>
+        <div class="card-tools">
+            <span id="judgement-types-count" data-toggle="tooltip" title="?" class="badge bg-primary">?</span>
+            <button id="judgement-types-api" type="button" class="btn btn-tool">API</button>
+        </div>
+    </div>
+    <div id="collapseJudgementTypes" class="panel-collapse collapse in">
+    <div class="card-body p-0">
+        <table id="judgement-types-table" class="table table-sm table-hover table-striped table-head-fixed">
+            <thead>
+                <tr>
+                    <th class="text-center">Id</th>
+                    <th width=90%>Name</th>
+                    <th>Penalty</th>
+                    <th>Solved</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+<script type="text/html" id="judgement-types-template">
+  <td class="text-center"><a href="{{api}}"><span class="badge {{badge}}">{{id}}</span></a></td>
+  <td>{{name}}</td>
+  <td class="text-center">{{#penalty}}<span class="badge badge-danger"><i class="fas fa-times"></i></a>{{/penalty}}</td>
+  <td class="text-center">{{#solved}}<span class="badge badge-success"><i class="fas fa-check"></i></a>{{/solved}}</td>
+</script>
+<script type="text/javascript">
+registerContestObjectTable("judgement-types");
+
+$(document).ready(function () {
+    $.when(contest.loadJudgementTypes()).done(function () {
+        fillContestObjectTable("judgement-types", contest.getJudgementTypes())
+    }).fail(function (result) {
+    	console.log("Error loading judgement types: " + result);
+    });
+});
+</script></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><div id="accordion">
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseProblems">Problems</a></h4>
+        <div class="card-tools">
+            <span id="problems-count" data-toggle="tooltip" title="?" class="badge bg-primary">?</span>
+            <button id="problems-api" type="button" class="btn btn-tool">API</button>
+        </div>
+    </div>
+    <div id="collapseProblems" class="panel-collapse collapse in">
+    <div class="card-body p-0">
+        <table id="problems-table" class="table table-sm table-hover table-striped table-head-fixed">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th class="text-center">Label</th>
+                    <th width=90%>Name</th>
+                    <th>Color</th>
+                    <th>RGB</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+<script type="text/html" id="problems-template">
+  <td><a href="{{api}}">{{id}}</a></td>
+  <td class="text-center"><span class="badge" style="background-color:{{rgb}}; width:25px; border:1px solid {{border}}"><font color={{fg}}>{{label}}</font></span></td>
+  <td>{{name}}</td>
+  <td>{{color}}</td>
+  <td>{{rgb}}</td>
+</script>
+<script type="text/javascript">
+registerContestObjectTable("problems");
+
+$(document).ready(function () {
+    $.when(contest.loadProblems()).done(function () {
+        fillContestObjectTable("problems", sortProblems(contest.getProblems()))
+    }).fail(function (result) {
+    	console.log("Error loading problems: " + result);
+    });
+});
+</script></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><div id="accordion">
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseAwards">Awards</a></h4>
+        <div class="card-tools">
+            <span id="awards-count" data-toggle="tooltip" title="?" class="badge bg-primary">?</span>
+            <button id="awards-api" type="button" class="btn btn-tool">API</button>
+        </div>
+    </div>
+    <div id="collapseAwards" class="panel-collapse collapse in">
+    <div class="card-body p-0">
+        <table id="awards-table" class="table table-sm table-hover table-striped table-head-fixed">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Citation</th>
+                    <th>Teams</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+<script type="text/html" id="awards-template">
+  <td><a href="{{api}}">{{id}}</a></td>
+  <td>{{citation}}</td>
+  <td>{{{teamsStr}}}</td>
+</script>
+<script type="text/javascript">
+registerContestObjectTable("awards");
+
+$(document).ready(function () {
+    $.when(contest.loadAwards(), contest.loadTeams()).done(function () {
+        fillContestObjectTable("awards", contest.getAwards())
+    }).fail(function (result) {
+    	console.log("Error loading awards: " + result);
+    });
+});
+</script></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Judgements</h3>
+                    <div class="card-tools">
+                        <span id="judgements-count" title="?" class="badge bg-primary">?</span>
+                        <button id="judgements-button" type="button" class="btn btn-tool">API</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Runs</h3>
+                    <div class="card-tools">
+                        <span id="runs-count" title="?" class="badge bg-primary">?</span>
+                        <button id="runs-button" type="button" class="btn btn-tool">API</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        let fastCds = {};
+        $.when(contest.loadObject('extensions/fast-cds/details', (result) => {
+            fastCds.judgements = result.judgements;
+            fastCds.runs = result.runs;
+        })).done(function () {
+        	updateContestObjectHeader("judgements", { length: fastCds.judgements });
+        	updateContestObjectHeader("runs", { length: fastCds.runs });
+        }).fail(function (result) {
+        	console.log("Error loading fast-cds/details: " + result);
+        })
+    })
+    updateContestClock(contest, "contest-time");
+</script>

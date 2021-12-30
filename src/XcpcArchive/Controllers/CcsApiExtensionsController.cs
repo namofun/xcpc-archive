@@ -79,5 +79,25 @@ namespace XcpcArchive.Controllers
 
             return new JsonResult(array);
         }
+
+        [HttpGet("fast-cds/details")]
+        public async Task<IActionResult> FastCdsDetails([FromRoute] string id)
+        {
+            id = _client.NormalizeContestId(id);
+
+            List<JObject> judgementAggregation = await _client.GetCustomObjectsAsync<Judgement, JObject>(
+                "SELECT COUNT(1) FROM c WHERE c._cid = @id",
+                new { id });
+
+            List<JObject> runAggregation = await _client.GetCustomObjectsAsync<Run, JObject>(
+                "SELECT COUNT(1) FROM c WHERE c._cid = @id",
+                new { id });
+
+            return new JsonResult(new
+            {
+                judgements = judgementAggregation.FirstOrDefault()?["$1"] ?? JToken.FromObject(0),
+                runs = runAggregation.FirstOrDefault()?["$1"] ?? JToken.FromObject(0),
+            });
+        }
     }
 }

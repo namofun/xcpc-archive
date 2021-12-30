@@ -173,6 +173,17 @@ namespace XcpcArchive.CcsApi
             return GetListAsync<TEntity>(queryDefinition);
         }
 
+        public Task<List<TResult>> GetCustomObjectsAsync<TEntity, TResult>(string sql, object param) where TEntity : EntityBase
+        {
+            QueryDefinition queryDefinition = new(sql);
+            foreach ((string paramName, JToken? paramValue) in JObject.FromObject(param))
+            {
+                queryDefinition.WithParameter("@" + paramName, paramValue);
+            }
+
+            return GetListInternalAsync<TResult>(_database.GetContainer(_containerMapping[typeof(TEntity)]), queryDefinition);
+        }
+
         [Obsolete("We only use this to generate SQL at debug time")]
         public Task<List<TEntity>> GetListAsync<TEntity>(Func<IOrderedQueryable<TEntity>, IQueryable<TEntity>> linq) where TEntity : EntityBase
         {
