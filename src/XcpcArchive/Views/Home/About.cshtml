@@ -4,16 +4,15 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-8">
+    <div class="col-md-8">
       <div class="card">
         <div class="card-body p-0">
-          <p class="indent">
+          <p class="indent mt-3">
             XCPC Archive is a tool for achiving contest data with online database, providing online
             access for judges and technical supports. We also support transferring data during contest
             time, provide data credibility if there is dissension.
           </p>
-
-          <table class="table table-sm table-hover table-striped mb-4">
+          <table class="table table-sm table-hover table-striped mb-3">
             <tbody>
               <tr>
                 <td>Source Code</td>
@@ -23,13 +22,45 @@
                 <td>CN XCPC Tools</td>
                 <td><a href="https://github.com/cn-xcpc-tools" target="_blank">https://github.com/cn-xcpc-tools</a></td>
               </tr>
+              <tr>
+                <td>ICPC Tools</td>
+                <td><a href="https://github.com/icpctools" target="_blank">https://github.com/icpctools</a></td>
+              </tr>
+              <tr>
+                <td>Azure Cosmos DB</td>
+                <td><a href="https://azure.microsoft.com/en-us/services/cosmos-db/" target="_blank">https://azure.microsoft.com/en-us/services/cosmos-db/</a></td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <div class="card">
+        <div class="card-body py-3">
+          <p>
+            The application is hosted on Azure App Service, with primary database Azure Cosmos DB.
+            Uploaded original zips are stored in Azure Storage Blobs.
+            Source code is hosted on GitHub, CI/CD is managed by Azure DevOps.
+          </p>
+          <p class="mb-0">
+            On writing to Azure Cosmos DB, the timestamp will be recorded at field <code>_ts</code>, the application will output the timestamp when accessing a single object.
+            Note that this application isn't served as instance of CCS, we don't provide event feeds, hook API and so on.
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="col-4">
-      <img src="logo.png" height="240"/>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <img src="logo.png" height="80"/>
+          <hr />
+          <img src="10261-icon-service-Azure-DevOps.svg" height="40" class="mr-1"/>
+          <img src="10221-icon-service-Azure-Active-Directory.svg" height="40" class="mr-1"/>
+          <img src="10121-icon-service-Azure-Cosmos-DB.svg" height="40" class="mr-1"/>
+          <img src="10086-icon-service-Storage-Accounts.svg" height="40" class="mr-1"/>
+          <img src="10035-icon-service-App-Services.svg" height="40" class="mr-1"/>
+          <img src="00012-icon-service-Application-Insights.svg" height="40"/>
+        </div>
+      </div>
     </div>
   </div>
 </div>

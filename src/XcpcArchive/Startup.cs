@@ -7,14 +7,34 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace XcpcArchive
 {
     public class Startup
     {
+        public static string Version { get; private set; } = "Unknown";
+
         public static void Main(string[] args)
         {
+            string? versionName = typeof(Startup).Assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion;
+
+            if (!string.IsNullOrEmpty(versionName))
+            {
+                string[] segments = versionName.Split('+');
+                if (segments.Length == 2)
+                {
+                    Version = segments[0] + " (" + segments[1][..7] + ")";
+                }
+                else
+                {
+                    Version = versionName;
+                }
+            }
+
             var builder = WebApplication.CreateBuilder(args);
 
             string cosmosDbConnectionString = builder.Configuration.GetConnectionString("CosmosDb");
