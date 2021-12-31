@@ -95,25 +95,38 @@ namespace XcpcArchive.CcsApi
         }
 
         public static async Task GenerateCacheAsync(this CcsApiClient client, Contest contest)
+            => await GenerateCacheAsync(
+                client.GetDatabase().GetContainer("cache"),
+                contest,
+                await GetProblemCacheAsync(client, contest),
+                await GetTeamCacheAsync(client, contest),
+                await GetSubmissionCacheAsync(client, contest),
+                await client.GetListAsync<JudgementType>("SELECT c.id, c.name, c.penalty, c.solved FROM c WHERE c._cid = @id ORDER BY c.id", new { id = contest.Id }),
+                await client.GetCacheAsync<string>("SELECT VALUE c.id FROM c WHERE c._cid = @id", new { id = contest.Id }));
+
+        public static async Task GenerateCacheAsync(
+            Container container,
+            Contest contest,
+            List<ProblemCache> problemCache,
+            List<TeamCache> teamCache,
+            List<SubmissionCache> submissionCache,
+            List<JudgementType> judgementTypes,
+            List<string> cacheKeys)
         {
-            List<ProblemCache> p = await GetProblemCacheAsync(client, contest);
-            List<TeamCache> t = await GetTeamCacheAsync(client, contest);
-            List<SubmissionCache> s = await GetSubmissionCacheAsync(client, contest);
-            List<JudgementType> jt = await client.GetListAsync<JudgementType>("SELECT c.id, c.name, c.penalty, c.solved FROM c WHERE c._cid = @id ORDER BY c.id", new { id = contest.Id });
             List<CacheEntry> generatedCache = new();
 
             generatedCache.Add(new()
             {
                 Id = contest.Id + "--slot-0",
                 Slot = 0,
-                Problems = p,
-                Teams = t,
-                JudgementTypes = jt,
+                Problems = problemCache,
+                Teams = teamCache,
+                JudgementTypes = judgementTypes,
                 Contest = contest,
                 ContestId = contest.Id,
             });
 
-            generatedCache.AddRange(s.Chunk(1000).Select((ss, i) => new CacheEntry()
+            generatedCache.AddRange(submissionCache.Chunk(1000).Select((ss, i) => new CacheEntry()
             {
                 Id = contest.Id + "--slot-" + (i + 1),
                 Slot = i + 1,
@@ -121,16 +134,8 @@ namespace XcpcArchive.CcsApi
                 Submissions = ss.ToList(),
             }));
 
-            List<JObject> cacheKeys = await client.GetCacheAsync<JObject>(
-                "SELECT c.id FROM c WHERE c._cid = @id",
-                new { id = contest.Id });
-
-            Container container = client.GetDatabase().GetContainer("cache");
             TransactionalBatch batch = container.CreateTransactionalBatch(new PartitionKey(contest.Id));
-            foreach (string unusedKey in
-                cacheKeys
-                    .Select(j => (string)j["id"]!)
-                    .Except(generatedCache.Select(j => j.Id)))
+            foreach (string unusedKey in cacheKeys.Except(generatedCache.Select(j => j.Id)))
             {
                 batch.DeleteItem(unusedKey);
             }

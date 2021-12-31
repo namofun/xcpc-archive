@@ -162,9 +162,16 @@ namespace XcpcArchive.CcsApi
                 throw new RecoverableException("Invalid contest.json");
             }
 
+            ZipArchiveEntry? scoreboardJson = zipArchive.GetEntry("scoreboard.json");
+            if (scoreboardJson == null)
+            {
+                throw new RecoverableException("File scoreboard.json not found.");
+            }
+
             contest["id"] = id;
             contest["_cid"] = id;
             contest["_original_id"] = originalId;
+            contest["_state"] = (await scoreboardJson.ReadAsJsonAsync())["state"];
             Dictionary<string, List<JObject>> insertRecords = new();
 
             string[] neededPart = new[]
@@ -260,6 +267,13 @@ namespace XcpcArchive.CcsApi
                 ["problems"] = insertRecords["problems"].Count,
                 ["teams"] = insertRecords["teams"].Count,
                 ["submissions"] = insertRecords["submissions"].Count,
+                ["runs"] = insertRecords["runs"].Count,
+                ["languages"] = insertRecords["languages"].Count,
+                ["clarifications"] = insertRecords["clarifications"].Count,
+                ["groups"] = insertRecords["groups"].Count,
+                ["judgements"] = insertRecords["judgements"].Count,
+                ["judgement_types"] = insertRecords["judgement-types"].Count,
+                ["organizations"] = insertRecords["organizations"].Count,
             };
 
             await _database.GetContainer("contests").CreateItemAsync(contest, new PartitionKey(id));
@@ -299,6 +313,21 @@ namespace XcpcArchive.CcsApi
                     }
                 }
             }
+
+            await CcsApiCacheGenerator.GenerateCacheAsync(
+                _database.GetContainer("cache"),
+                contest.ToObject<Entities.Contest>()!,
+                CcsApiCacheGenerator.ToProblemCache(
+                    insertRecords["problems"].Select(p => p.ToObject<Entities.Problem>()!)),
+                CcsApiCacheGenerator.ToTeamCache(
+                    insertRecords["teams"].Select(p => p.ToObject<Entities.Team>()!),
+                    insertRecords["groups"].Select(p => p.ToObject<Entities.Group>()!),
+                    insertRecords["organizations"].Select(p => p.ToObject<Entities.Organization>()!)),
+                CcsApiCacheGenerator.ToSubmissionCache(
+                    insertRecords["submissions"].Select(p => p.ToObject<Entities.Submission>()!),
+                    insertRecords["judgements"].Select(p => p.ToObject<Entities.Judgement>()!)),
+                insertRecords["judgement-types"].Select(p => p.ToObject<Entities.JudgementType>()!).ToList(),
+                new List<string>());
         }
     }
 }
