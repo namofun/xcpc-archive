@@ -18,14 +18,14 @@ namespace XcpcArchive.CcsApi.Models
         [JsonProperty("contest")]
         public Contest? Contest { get; init; }
 
-        [JsonProperty("state", NullValueHandling = NullValueHandling.Ignore)]
-        public State? State { get; init; }
-
         [JsonProperty("teams", NullValueHandling = NullValueHandling.Ignore)]
         public List<TeamCache>? Teams { get; init; }
 
         [JsonProperty("problems", NullValueHandling = NullValueHandling.Ignore)]
         public List<ProblemCache>? Problems { get; init; }
+
+        [JsonProperty("judgement-types", NullValueHandling = NullValueHandling.Ignore)]
+        public List<JudgementType>? JudgementTypes { get; init; }
 
         [JsonProperty("submissions", NullValueHandling = NullValueHandling.Ignore)]
         public List<SubmissionCache>? Submissions { get; init; }

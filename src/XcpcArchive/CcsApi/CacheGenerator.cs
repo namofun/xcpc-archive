@@ -13,11 +13,11 @@ namespace XcpcArchive.CcsApi
         const string SelectAllQuery = "SELECT * FROM c WHERE c._cid = @id";
 
         private static async Task<List<ProblemCache>> GetProblemCacheAsync(CcsApiClient client, Contest contest)
-        {
-            var problems = await client.GetListAsync<Problem>(
-                SelectAllQuery,
-                new { id = contest.Id });
+            => ToProblemCache(
+                await client.GetListAsync<Problem>(SelectAllQuery, new { id = contest.Id }));
 
+        public static List<ProblemCache> ToProblemCache(IEnumerable<Problem> problems)
+        {
             return problems
                 .OrderBy(p => p.Ordinal)
                 .Select(p => new ProblemCache()
@@ -32,11 +32,13 @@ namespace XcpcArchive.CcsApi
         }
 
         private static async Task<List<TeamCache>> GetTeamCacheAsync(CcsApiClient client, Contest contest)
-        {
-            var teams = await client.GetListAsync<Team>(SelectAllQuery, new { id = contest.Id });
-            var organizations = await client.GetListAsync<Organization>(SelectAllQuery, new { id = contest.Id });
-            var groups = await client.GetListAsync<Group>(SelectAllQuery, new { id = contest.Id });
+            => ToTeamCache(
+                await client.GetListAsync<Team>(SelectAllQuery, new { id = contest.Id }),
+                await client.GetListAsync<Group>(SelectAllQuery, new { id = contest.Id }),
+                await client.GetListAsync<Organization>(SelectAllQuery, new { id = contest.Id }));
 
+        public static List<TeamCache> ToTeamCache(IEnumerable<Team> teams, IEnumerable<Group> groups, IEnumerable<Organization> organizations)
+        {
             var orgMap = organizations.ToDictionary(o => o.Id);
             var groupMap = groups.ToDictionary(g => g.Id);
 
@@ -62,16 +64,13 @@ namespace XcpcArchive.CcsApi
         }
 
         private static async Task<List<SubmissionCache>> GetSubmissionCacheAsync(CcsApiClient client, Contest contest)
+            => ToSubmissionCache(
+                await client.GetListAsync<Submission>(SelectAllQuery, new { id = contest.Id }),
+                await client.GetListAsync<Judgement>(SelectAllQuery, new { id = contest.Id }));
+
+        public static List<SubmissionCache> ToSubmissionCache(IEnumerable<Submission> submits, IEnumerable<Judgement> judges)
         {
-            var submits = await client.GetListAsync<Submission>(
-                SelectAllQuery,
-                new { id = contest.Id });
-
-            var judges = await client.GetListAsync<Judgement>(
-                "SELECT * FROM c WHERE c._cid = @id AND NOT (IS_DEFINED(c.valid) AND c.valid = false)",
-                new { id = contest.Id });
-
-            ILookup<string, Judgement> judgements = judges.ToLookup(j => j.SubmissionId);
+            ILookup<string, Judgement> judgements = judges.Where(j => j.Valid).ToLookup(j => j.SubmissionId);
             return submits
                 .OrderBy(s => s.Id.Length)
                 .ThenBy(s => s.Id)
@@ -100,6 +99,7 @@ namespace XcpcArchive.CcsApi
             List<ProblemCache> p = await GetProblemCacheAsync(client, contest);
             List<TeamCache> t = await GetTeamCacheAsync(client, contest);
             List<SubmissionCache> s = await GetSubmissionCacheAsync(client, contest);
+            List<JudgementType> jt = await client.GetListAsync<JudgementType>("SELECT c.id, c.name, c.penalty, c.solved FROM c WHERE c._cid = @id ORDER BY c.id", new { id = contest.Id });
             List<CacheEntry> generatedCache = new();
 
             generatedCache.Add(new()
@@ -108,6 +108,7 @@ namespace XcpcArchive.CcsApi
                 Slot = 0,
                 Problems = p,
                 Teams = t,
+                JudgementTypes = jt,
                 Contest = contest,
                 ContestId = contest.Id,
             });

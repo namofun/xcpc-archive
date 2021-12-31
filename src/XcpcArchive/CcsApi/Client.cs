@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
@@ -20,15 +21,18 @@ namespace XcpcArchive.CcsApi
         private readonly Database _database;
         private readonly BlobContainerClient _blobs;
         private readonly ILogger<CcsApiClient> _logger;
+        private readonly IMemoryCache _memoryCache;
         private readonly IReadOnlyDictionary<Type, string> _containerMapping;
 
         public CcsApiClient(
             CosmosClient cosmosClient,
             BlobServiceClient blobServiceClient,
+            IMemoryCache memoryCache,
             ILogger<CcsApiClient> logger)
         {
             _database = cosmosClient.GetDatabase("ccsapi");
             _blobs = blobServiceClient.GetBlobContainerClient("ccsapi");
+            _memoryCache = memoryCache;
             _logger = logger;
 
             _containerMapping = new Dictionary<Type, string>()
@@ -58,6 +62,11 @@ namespace XcpcArchive.CcsApi
         public BlobContainerClient GetBlobContainer()
         {
             return _blobs;
+        }
+
+        public IMemoryCache GetMemoryCache()
+        {
+            return _memoryCache;
         }
 
         public async Task InitializeAsync()

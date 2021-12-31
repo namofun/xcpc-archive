@@ -1,20 +1,32 @@
 ﻿@using System.Diagnostics
+@using System.Net
+@using System.Text.RegularExpressions
 @{
-    ViewData["Title"] = "Error";
+    HttpStatusCode code = (HttpStatusCode)Context.Response.StatusCode;
+    string codename = Regex.Replace(code.ToString(), "([a-z])([A-Z])", "$1 $2");
+    ViewData["Title"] = $"{(int)code} {codename}";
     string? requestId = Activity.Current?.Id ?? Context.TraceIdentifier;
 }
-
 <div class="container-fluid">
   <div class="row">
-    <div id="errors" class="col-12">
-      <p class="text-danger">An error occurred while processing your request.</p>
-
-      @if (!string.IsNullOrEmpty(requestId))
-      {
-        <p>
-          Request ID: <code>@requestId</code>
-        </p>
-      }
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Oops! Something went wrong!</h3>
+        </div>
+        <div class="card-body">
+          <p>
+            An error occurred while processing your request.
+          </p>
+@if (!string.IsNullOrEmpty(requestId))
+{
+          <p>
+            Request ID: <code>@requestId</code>
+          </p>
+}
+          <p class="mb-0">If you believe this is an unexpected error, please <a href="mailto:acm@xylab.fun">contact administrator</a>.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>

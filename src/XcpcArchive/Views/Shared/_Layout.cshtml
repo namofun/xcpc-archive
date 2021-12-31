@@ -141,8 +141,11 @@
               <a href="#" class="nav-link active">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>
-                  (unnamed contest)
+                  @cid
+@if (ViewContext.View.Path.Contains("NotFound"))
+{
                   <i class="right fas fa-angle-left"></i><span class="badge badge-danger">!</span>
+}
                 </p>
               </a>
 

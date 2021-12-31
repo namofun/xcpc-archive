@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using XcpcArchive.CcsApi.Models;
 
 namespace XcpcArchive.CcsApi.Entities
 {
@@ -83,6 +84,12 @@ namespace XcpcArchive.CcsApi.Entities
         /// </remarks>
         [JsonProperty("scoreboard_type", NullValueHandling = NullValueHandling.Ignore)]
         public string? ScoreboardType { get; init; }
+
+        /// <summary>
+        /// State of contest
+        /// </summary>
+        [JsonProperty("_state", NullValueHandling = NullValueHandling.Ignore)]
+        public State? State { get; set; }
 
         /// <summary>
         /// Extension data

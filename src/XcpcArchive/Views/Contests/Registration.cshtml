@@ -134,6 +134,7 @@ registerContestObjectTable("teams");
 
 $(document).ready(function () {
   $.when(contest.loadTeams(), contest.loadOrganizations(), contest.loadGroups()).done(function () {
+    contest.getGroups().forEach(g => { if (g.hidden === false) delete g.hidden; });
     fillContestObjectTable("teams", contest.getTeams());
     fillContestObjectTable("groups", contest.getGroups());
     fillContestObjectTable("organizations", contest.getOrganizations());
