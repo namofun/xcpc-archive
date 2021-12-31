@@ -100,9 +100,7 @@ function getRow(scr, type) {
             }
         }
 
-        if ((obj.solved == false || obj.score == 0) && obj.num == 0)
-        	row.append('<td></td>');
-        else if ("score" == type)
+        if ("score" == type)
         	row.append(toHtml("cell-score", obj));
         else
         	row.append(toHtml("cell", obj));

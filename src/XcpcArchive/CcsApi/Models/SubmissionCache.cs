@@ -13,6 +13,9 @@ namespace XcpcArchive.CcsApi.Models
         [JsonProperty("v")]
         public string? JudgementTypeId { get; init; }
 
+        [JsonProperty("l")]
+        public string LanguageId { get; init; } = null!;
+
         [JsonProperty("p")]
         public string ProblemId { get; init; } = null!;
 

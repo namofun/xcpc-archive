@@ -142,9 +142,10 @@
                 <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>
                   @cid
+                  <i class="right fas fa-angle-left"></i>
 @if (ViewContext.View.Path.Contains("NotFound"))
 {
-                  <i class="right fas fa-angle-left"></i><span class="badge badge-danger">!</span>
+                  <span class="badge badge-danger">!</span>
 }
                 </p>
               </a>
@@ -152,16 +153,9 @@
               <ul class="nav nav-treeview" style="margin-left:10px">
 
                 <li class="nav-item">
-                  <a href="/contests/@cid" class="nav-link @IsActive("Contests", "Overview")">
+                  <a href="/contests/@cid" class="nav-link @IsActive("Contests", "Details")">
                     <i class="far fa-flag nav-icon"></i>
                     <p>Overview</p>
-                  </a>
-                </li>
-
-                <li class="nav-item">
-                  <a href="/contests/@cid/details" class="nav-link @IsActive("Contests", "Details")">
-                    <i class="far fa-compass nav-icon"></i>
-                    <p>Details</p>
                   </a>
                 </li>
 

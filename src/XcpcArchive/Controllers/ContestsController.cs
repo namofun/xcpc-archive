@@ -23,6 +23,7 @@ namespace XcpcArchive.Controllers
             return View();
         }
 
+        [HttpGet("{id}")]
         [HttpGet("{id}/details")]
         public IActionResult Details()
         {
@@ -43,6 +44,12 @@ namespace XcpcArchive.Controllers
 
         [HttpGet("{id}/scoreboard")]
         public IActionResult Scoreboard()
+        {
+            return View();
+        }
+
+        [HttpGet("{id}/reports")]
+        public IActionResult Reports()
         {
             return View();
         }

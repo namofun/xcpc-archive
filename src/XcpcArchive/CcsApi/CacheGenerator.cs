@@ -87,6 +87,7 @@ namespace XcpcArchive.CcsApi
                         ContestTime = (int)s.ContestTime.TotalSeconds,
                         JudgementId = j?.Id,
                         JudgementTypeId = j?.JudgementTypeId,
+                        LanguageId = s.LanguageId,
                         ProblemId = s.ProblemId,
                         TeamId = s.TeamId,
                     };
