@@ -14,9 +14,6 @@
     "logWorkspaceName": {
       "value": "misc-logs"
     },
-    "logWorkspaceLocation": {
-      "value": "westus2"
-    },
     "hostingPlanName": {
       "value": "xcpc-archive"
     },

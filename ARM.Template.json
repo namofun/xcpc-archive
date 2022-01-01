@@ -8,9 +8,6 @@
     "logWorkspaceName": {
       "type": "string"
     },
-    "logWorkspaceLocation": {
-      "type": "string"
-    },
     "appInsightsName": {
       "type": "string"
     },
@@ -46,7 +43,9 @@
     }
   },
   "variables": {
-    "location": "[resourceGroup().location]"
+    "location": "[resourceGroup().location]",
+    "appInsightsCollectorName": "[concat(deployment().name, '-appinsights-collector')]",
+    "logWorkspaceId": "[resourceId(parameters('logWorkspaceRG'), 'Microsoft.OperationalInsights/workspaces', parameters('logWorkspaceName'))]"
   },
   "resources": [
     {
@@ -88,18 +87,66 @@
       }
     },
     {
-      "type": "Microsoft.Insights/components",
-      "apiVersion": "2020-02-02-preview",
-      "name": "[parameters('appInsightsName')]",
-      "location": "[parameters('logWorkspaceLocation')]",
-      "dependsOn": [],
-      "tags": {},
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('appInsightsCollectorName')]",
       "properties": {
-        "ApplicationId": "[parameters('appInsightsName')]",
-        "Application_Type": "web",
-        "Flow_Type": "Redfield",
-        "Request_Source": "IbizaAIExtension",
-        "WorkspaceResourceId": "[resourceId(parameters('logWorkspaceRG'), 'Microsoft.OperationalInsights/workspaces', parameters('logWorkspaceName'))]"
+        "mode": "Incremental",
+        "parameters": {
+          "appInsightsName": {
+            "value": "[parameters('appInsightsName')]"
+          },
+          "logWorkspaceId": {
+            "value": "[variables('logWorkspaceId')]"
+          },
+          "logWorkspaceLocation": {
+            "value": "[reference(variables('logWorkspaceId'), '2021-06-01', 'FULL').location]"
+          }
+        },
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "template": {
+          "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "appInsightsName": {
+              "type": "string"
+            },
+            "logWorkspaceId": {
+              "type": "string"
+            },
+            "logWorkspaceLocation": {
+              "type": "string"
+            }
+          },
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02-preview",
+              "name": "[parameters('appInsightsName')]",
+              "location": "[parameters('logWorkspaceLocation')]",
+              "properties": {
+                "ApplicationId": "[parameters('appInsightsName')]",
+                "Application_Type": "web",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaAIExtension",
+                "WorkspaceResourceId": "[parameters('logWorkspaceId')]"
+              }
+            }
+          ],
+          "outputs": {
+            "instrumentationKey": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]"
+            },
+            "connectionString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).ConnectionString]"
+            }
+          }
+        }
       }
     },
     {
@@ -195,7 +242,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-        "[concat('Microsoft.Insights/components/', parameters('appInsightsName'))]",
+        "[variables('appInsightsCollectorName')]",
         "[concat('Microsoft.DocumentDB/databaseAccounts/', parameters('cosmosDbName'))]",
         "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
         "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'), '/blobServices/default')]",
@@ -211,11 +258,11 @@
           "appSettings": [
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).InstrumentationKey]"
+              "value": "[reference(variables('appInsightsCollectorName')).outputs.instrumentationKey.value]"
             },
             {
               "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName'))).ConnectionString]"
+              "value": "[reference(variables('appInsightsCollectorName')).outputs.connectionString.value]"
             },
             {
               "name": "ConnectionStrings__CosmosDb",
