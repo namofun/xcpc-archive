@@ -8,8 +8,14 @@
     "appInsightsName": {
       "value": "xcpc-archive"
     },
-    "logWorkspaceResourceId": {
-      "value": "/subscriptions/9b5b8bc1-fc5f-4597-b8d3-c7805248d965/resourceGroups/misctoolwebsites/providers/microsoft.operationalinsights/workspaces/misc-logs"
+    "logWorkspaceRG": {
+      "value": "MiscToolWebsites"
+    },
+    "logWorkspaceName": {
+      "value": "misc-logs"
+    },
+    "logWorkspaceLocation": {
+      "value": "westus2"
     },
     "hostingPlanName": {
       "value": "xcpc-archive"
@@ -20,8 +26,8 @@
     "storageAccountName": {
       "value": "xcpcarchive"
     },
-    "hostingPlanSku": {
-      "value": "B1"
+    "aadApplicationGuid": {
+      "value": "82229ba2-1ed5-448f-9427-c9efc9fb48df"
     }
   }
 }

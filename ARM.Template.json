@@ -2,7 +2,13 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "logWorkspaceResourceId": {
+    "logWorkspaceRG": {
+      "type": "string"
+    },
+    "logWorkspaceName": {
+      "type": "string"
+    },
+    "logWorkspaceLocation": {
       "type": "string"
     },
     "appInsightsName": {
@@ -19,15 +25,13 @@
       "type": "string",
       "maxLength": 24
     },
+    "aadApplicationGuid": {
+      "type": "string"
+    },
     "storageAccountAccessTier": {
       "type": "string",
       "defaultValue": "Cool",
       "allowedValues": ["Cool", "Hot"]
-    },
-    "storageAccountEndpointSuffix": {
-      "type": "string",
-      "defaultValue": "core.windows.net",
-      "allowedValues": ["core.windows.net", "core.chinacloudapi.cn"]
     },
     "hostingPlanName": {
       "type": "string"
@@ -42,8 +46,7 @@
     }
   },
   "variables": {
-    "location": "[resourceGroup().location]",
-    "appInsightsLocation": "westus2"
+    "location": "[resourceGroup().location]"
   },
   "resources": [
     {
@@ -88,7 +91,7 @@
       "type": "Microsoft.Insights/components",
       "apiVersion": "2020-02-02-preview",
       "name": "[parameters('appInsightsName')]",
-      "location": "[variables('appInsightsLocation')]",
+      "location": "[parameters('logWorkspaceLocation')]",
       "dependsOn": [],
       "tags": {},
       "properties": {
@@ -96,7 +99,7 @@
         "Application_Type": "web",
         "Flow_Type": "Redfield",
         "Request_Source": "IbizaAIExtension",
-        "WorkspaceResourceId": "[parameters('logWorkspaceResourceId')]"
+        "WorkspaceResourceId": "[resourceId(parameters('logWorkspaceRG'), 'Microsoft.OperationalInsights/workspaces', parameters('logWorkspaceName'))]"
       }
     },
     {
@@ -199,6 +202,9 @@
         "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'), '/fileServices/default')]"
       ],
       "tags": {},
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "properties": {
         "name": "[parameters('appServiceName')]",
         "siteConfig": {
@@ -217,14 +223,55 @@
             },
             {
               "name": "ConnectionStrings__StorageBlobs",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2021-08-01').keys[0].value, ';EndpointSuffix=', parameters('storageAccountEndpointSuffix'))]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2021-08-01').keys[0].value, ';EndpointSuffix=', environment().suffixes.storage)]"
             }
           ],
           "linuxFxVersion": "DOTNETCORE|6.0",
+          "http20Enabled": true,
           "alwaysOn": true
         },
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
         "clientAffinityEnabled": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2020-09-01",
+      "name": "[concat(parameters('appServiceName'), '/authsettingsV2')]",
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/', parameters('appServiceName'))]"
+      ],
+      "properties": {
+        "platform": {
+          "enabled": true
+        },
+        "globalValidation": {
+          "requireAuthentication": true,
+          "unauthenticatedClientAction": "AllowAnonymous"
+        },
+        "identityProviders": {
+          "azureActiveDirectory": {
+            "enabled": true,
+            "registration": {
+              "openIdIssuer": "[concat(environment().authentication.loginEndpoint, subscription().tenantId, '/v2.0')]",
+              "clientId": "[parameters('aadApplicationGuid')]"
+            },
+            "login": {
+              "disableWWWAuthenticate": false
+            }
+          }
+        },
+        "login": {
+          "tokenStore": {
+            "enabled": true
+          }
+        },
+        "httpSettings": {
+          "requireHttps": true,
+          "routes": {
+            "apiPrefix": "/.auth"
+          }
+        }
       }
     }
   ],
