@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "cosmosDbName": {
+      "value": "xcpc-archive"
+    },
+    "appInsightsName": {
+      "value": "xcpc-archive"
+    },
+    "logWorkspaceResourceId": {
+      "value": "/subscriptions/9b5b8bc1-fc5f-4597-b8d3-c7805248d965/resourceGroups/misctoolwebsites/providers/microsoft.operationalinsights/workspaces/misc-logs"
+    },
+    "hostingPlanName": {
+      "value": "xcpc-archive"
+    },
+    "appServiceName": {
+      "value": "xcpc-archive"
+    },
+    "storageAccountName": {
+      "value": "xcpcarchive"
+    },
+    "hostingPlanSku": {
+      "value": "B1"
+    }
+  }
+}
